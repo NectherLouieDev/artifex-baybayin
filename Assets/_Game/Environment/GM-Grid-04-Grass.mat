@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8778473247607997841
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 10
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GM-Grid-04-Grass
+  m_Shader: {fileID: -6465566751694194690, guid: b4bb8b5c4862a416fa38d705dedc4d96, type: 3}
+  m_Parent: {fileID: 2100000, guid: fb50a7397c7408248a8238602b7037c6, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _BLEND_MODE_PIN_LIGHT
+  - _COORDINATES_OBJECT
+  m_InvalidKeywords:
+  - _BLEND_MODE_ADD
+  - _EMISSION
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Side_Texture:
+        m_Texture: {fileID: 2800000, guid: fc55c8af6f8df0c4c8143b592fc01603, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Top_Texture:
+        m_Texture: {fileID: 2800000, guid: fc55c8af6f8df0c4c8143b592fc01603, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BLEND_MODE: 2
+    - _Blend_Opacity: 0.25
+    - _Dirt: 1
+    - _Edge_Sharpness: 1
+    - _Tiling: 0.2
+    m_Colors:
+    - _Dirt_Color: {r: 0.4039216, g: 0.3803922, b: 0.3529412, a: 0}
+    - _Side_Color: {r: 0.36862746, g: 0.46274513, b: 0.2392157, a: 1}
+    - _Top_Color: {r: 0.36731532, g: 0.46226418, b: 0.23767357, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &6314626258317507024
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639247ca83abc874e893eb93af2b5e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.ShaderGraph.Editor::UnityEditor.Rendering.BuiltIn.AssetVersion
+  version: 0

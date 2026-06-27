@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3edd2d2f8ecd3342a360340fbb32f56, type: 3}
+  m_Name: LevelTut00_EnemySpawn_02
+  m_EditorClassIdentifier: Assembly-CSharp::GameData_EnemySpawn
+  _prefab: {fileID: 4990681282376493225, guid: c0d0b2efc297b6c459a04306cc98cc61, type: 3}
+  defaultCount: 2
+  spawnDelayOffset: 0
+  spawnAtRandomPathPoint: 0
+  _enemyName: Hunter
+  _icon: {fileID: 0}
+  _description: 

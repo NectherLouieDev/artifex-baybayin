@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 995b6764d053ac14c821e2827925d654, type: 3}
+  m_Name: Recipe_BombBatter
+  m_EditorClassIdentifier: Assembly-CSharp::GameData_PrepRecipe
+  _recipeID: Bomb_Batter
+  inputs: 0100000002000000
+  allowDifferentOrder: 1
+  outputPrefab: {fileID: 8718284473390385828, guid: dff17201bda62ce4faa60f02ada8dca8, type: 3}
+  craftingTime: 3
+  recipeIcon: {fileID: 0}
+  craftingColor: {r: 1, g: 1, b: 1, a: 1}
+  craftingCompleteSound: {fileID: 0}
