@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _playerHeight = 2.0f;
     [SerializeField] private float _rotateSpeed = 10.0f;
     [SerializeField] private bool _isMoving = false;
+    [SerializeField] private bool _forceInputEnable = false;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask _groundLayer = 1;
@@ -38,7 +39,9 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         //GameplayEventBus.Instance.Subscribe<GameplayEvents.ShowMatchResult>(OnShowMatchResult);
-        //InputEnabled = true;
+        
+        if (_forceInputEnable)
+            InputEnabled = true;
     }
 
     //private void OnShowMatchResult(GameplayEvents.ShowMatchResult evt)

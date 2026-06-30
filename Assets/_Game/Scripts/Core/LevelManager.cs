@@ -38,7 +38,7 @@ public class LevelManager : MonoBehaviour
         }
 
         if (!_debugTransition)
-            SceneTransitioner.OnSceneLoaded += SceneTransitioner_OnSceneLoaded;
+            SceneTransitioner.Instance.OnSceneLoaded.AddListener(SceneTransitioner_OnSceneLoaded);
         else
             _introSequenceStepper.StartSequence();
     }
@@ -59,7 +59,7 @@ public class LevelManager : MonoBehaviour
 
     private void SceneTransitioner_OnSceneLoaded()
     {
-        SceneTransitioner.OnSceneLoaded -= SceneTransitioner_OnSceneLoaded;
+        SceneTransitioner.Instance.OnSceneLoaded.RemoveListener(SceneTransitioner_OnSceneLoaded);
 
         // Intro Event Sequencer
         _introSequenceStepper.StartSequence();

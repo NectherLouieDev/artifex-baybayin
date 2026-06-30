@@ -12,7 +12,7 @@ public class TransitionManager : MonoBehaviour
 
     private void OnEnable()
     {
-        SceneTransitioner.OnSceneLoaded += SceneTransitioner_OnSceneLoaded;
+        SceneTransitioner.Instance.OnSceneLoaded.AddListener(SceneTransitioner_OnSceneLoaded);
     }
 
     private void SceneTransitioner_OnSceneLoaded()
@@ -22,7 +22,7 @@ public class TransitionManager : MonoBehaviour
 
     private void OnDisable()
     {
-        SceneTransitioner.OnSceneLoaded -= SceneTransitioner_OnSceneLoaded;
+        SceneTransitioner.Instance.OnSceneLoaded.RemoveListener(SceneTransitioner_OnSceneLoaded);
     }
 
     public void StartTransition()

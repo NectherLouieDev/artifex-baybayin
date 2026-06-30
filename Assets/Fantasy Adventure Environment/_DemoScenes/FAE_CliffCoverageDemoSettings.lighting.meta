@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 193d3eeb20b75254d9901cbf1b004b7c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 70354
+  packageName: Fantasy Adventure Environment
+  packageVersion: 1.5.7
+  assetPath: Assets/Fantasy Adventure Environment/_DemoScenes/FAE_CliffCoverageDemoSettings.lighting
+  uploadId: 905430

@@ -36,14 +36,14 @@ public class MapManager : MonoBehaviour
         }
 
         if (!_debugTransition)
-            SceneTransitioner.OnSceneLoaded += SceneTransitioner_OnSceneLoaded;
+            SceneTransitioner.Instance.OnSceneLoaded.AddListener(SceneTransitioner_OnSceneLoaded);
         else
             _introSequenceStepper.StartSequence();
     }
 
     private void SceneTransitioner_OnSceneLoaded()
     {
-        SceneTransitioner.OnSceneLoaded -= SceneTransitioner_OnSceneLoaded;
+        SceneTransitioner.Instance.OnSceneLoaded.RemoveListener(SceneTransitioner_OnSceneLoaded);
 
         // Intro Event Sequencer
         _introSequenceStepper.StartSequence();
