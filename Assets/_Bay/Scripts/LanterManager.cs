@@ -293,20 +293,26 @@ public class LanternManager : MonoBehaviour
     public void EnterSafeZone()
     {
         isInSafeZone = true;
+
         // Visual feedback
         if (lanternParticles != null)
         {
             lanternParticles.startColor = new Color(1f, 0.8f, 0.4f);
         }
+
+        UIManager.Instance.ShowMessage("Entered Safe Zone!");
     }
 
     public void ExitSafeZone()
     {
         isInSafeZone = false;
+
         if (lanternParticles != null)
         {
             lanternParticles.startColor = new Color(1f, 0.6f, 0.2f);
         }
+
+        UIManager.Instance.ShowMessage("Exited Safe Zone!");
     }
 
     #endregion

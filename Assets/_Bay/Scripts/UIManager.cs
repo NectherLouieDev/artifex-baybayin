@@ -100,6 +100,7 @@ public class UIManager : MonoBehaviour
         pauseMenuPanel.SetActive(false);
         interactPanel.SetActive(false);
         messagePanel.SetActive(false);
+        compassPanel.SetActive(false);
 
         // Set up button listeners
         if (discoveryPortalButton != null)
