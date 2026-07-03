@@ -70,8 +70,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image fuelSlotImage;
     [SerializeField] private TMP_Text fuelSlotCountText;
 
-    [Header("Pause Menu")]
+    [Header("Game Panels")]
     [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private GameObject victoryPanel;
+    [SerializeField] private GameObject gameOverPanel;
 
     [Header("Debug")]
     [SerializeField] private TMP_Text debugText;
@@ -93,11 +95,13 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         // Hide all panels initially
+        pauseMenuPanel.SetActive(false);
+        victoryPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
         discoveryScreenPanel.SetActive(false);
         portalNotificationPanel.SetActive(false);
         tooltipPanel.SetActive(false);
         inventoryPanel.SetActive(false);
-        pauseMenuPanel.SetActive(false);
         interactPanel.SetActive(false);
         messagePanel.SetActive(false);
         compassPanel.SetActive(false);

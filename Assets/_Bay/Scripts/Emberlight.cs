@@ -1,12 +1,16 @@
-using MoreMountains.Feedbacks;
+﻿using MoreMountains.Feedbacks;
 using UnityEngine;
 
 public class Emberlight : MonoBehaviour
 {
+    [Header("Emberlight Settings")]
     [SerializeField] private GameObject _visual;
     [SerializeField] private Collider _collider;
     [SerializeField] private MMFeedbacks _collectFeedback;
+    [SerializeField] private int fuelValue = 5;
 
+    // References
+    private EmberlightStation station;
     private GGTimer _delayDestroyTimer;
 
     private void Start()
@@ -24,14 +28,37 @@ public class Emberlight : MonoBehaviour
     {
         if (collision.transform.TryGetComponent(out PlayerIdentity identity))
         {
-            LanternManager.Instance.Refuel(5f);
-
-            _collectFeedback?.PlayFeedbacks();
-
-            _collider.enabled = false;
-            _visual.SetActive(false);
-
-            _delayDestroyTimer.StartTimer(0.5f, 1);
+            Pickup();
         }
+    }
+
+    private void Pickup()
+    {
+        // Add fuel to lantern
+        LanternManager.Instance?.Refuel(fuelValue);
+
+        // Play feedback
+        _collectFeedback?.PlayFeedbacks();
+
+        // Notify station
+        if (station != null)
+        {
+            station.OnEmberlightPickedUp(gameObject);
+        }
+
+        // Show feedback
+        UIManager.Instance?.ShowMessage($"✦ +{fuelValue} Emberlight");
+
+        // Disable visuals and collider
+        _collider.enabled = false;
+        _visual.SetActive(false);
+
+        // Destroy after delay
+        _delayDestroyTimer.StartTimer(0.5f, 1);
+    }
+
+    public void SetStation(EmberlightStation stationRef)
+    {
+        station = stationRef;
     }
 }

@@ -76,7 +76,8 @@ public class PlayerController : MonoBehaviour
         if (!_isGrounded)
             return;
 
-        UpdateMovement();
+        //UpdateMovement();
+        UpdateMovementThirdPerson();
     }
 
     private void UpdateMovement()
@@ -133,6 +134,95 @@ public class PlayerController : MonoBehaviour
         {
             transform.forward = Vector3.Slerp(transform.forward, moveDirection.normalized, Time.deltaTime * _rotateSpeed);
         }
+    }
+
+    private void UpdateMovementThirdPerson()
+    {
+        Transform cameraTransform = Camera.main.transform;
+        Vector3 cameraForward = cameraTransform.forward;
+        Vector3 cameraRight = cameraTransform.right;
+
+        cameraForward.y = 0;
+        cameraForward.Normalize();
+        cameraRight.y = 0;
+        cameraRight.Normalize();
+
+        //Vector2 inputVector = GameplayInput.Instance.GetMovementVectorNormalized();
+        Vector2 inputVector = _inputVector;
+
+        //Vector3 moveDirection = new Vector3(inputVector.x, 0, inputVector.y);
+        Vector3 moveDirection = (cameraForward * inputVector.y + cameraRight * inputVector.x).normalized;
+
+        float moveDistance = _moveSpeed * Time.deltaTime;
+        bool canMove = !TryCapsuleCast(moveDirection, moveDistance);
+
+        if (!canMove)
+        {
+            // cannot move this direction
+
+            // check x movement
+            Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
+            canMove = moveDirection.x != 0 && !TryCapsuleCast(moveDirectionX, moveDistance);
+
+            // if can move on x
+            if (canMove)
+            {
+                moveDirection = moveDirectionX;
+            }
+            else
+            {
+                // z movement
+                Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
+                canMove = moveDirection.z != 0 && !TryCapsuleCast(moveDirectionZ, moveDistance);
+
+                if (canMove)
+                {
+                    moveDirection = moveDirectionZ;
+                }
+                else
+                {
+                    // cannot move
+                }
+            }
+        }
+
+        if (canMove)
+        {
+            transform.position += moveDirection * moveDistance;
+        }
+
+        _isMoving = moveDirection != Vector3.zero;
+
+        //transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed);
+
+        // Check if the direction has meaningful length
+        if (moveDirection.sqrMagnitude > 0.01f)
+        {
+            transform.forward = Vector3.Slerp(transform.forward, moveDirection.normalized, Time.deltaTime * _rotateSpeed);
+        }
+
+        //Vector3 lookDirection = cameraForward;
+
+        //if (lookDirection.sqrMagnitude > 0.01f)
+        //{
+        //    transform.forward = Vector3.Slerp(transform.forward, lookDirection, Time.deltaTime * _rotateSpeed);
+        //}
+
+        //// Replace the look direction section with this:
+        //if (moveDirection.sqrMagnitude > 0.01f)
+        //{
+        //    // Face movement direction while moving
+        //    transform.forward = Vector3.Slerp(transform.forward, moveDirection.normalized, Time.deltaTime * _rotateSpeed);
+        //}
+        //else
+        //{
+        //    // Idle: face camera direction
+        //    Vector3 lookDirection = cameraForward;
+        //    if (lookDirection.sqrMagnitude > 0.01f)
+        //    {
+        //        transform.forward = Vector3.Slerp(transform.forward, lookDirection, Time.deltaTime * _rotateSpeed);
+        //    }
+        //}
     }
 
     private bool TryCapsuleCast(Vector3 direction, float distance)

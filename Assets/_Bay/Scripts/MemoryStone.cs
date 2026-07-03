@@ -5,7 +5,8 @@ using UnityEngine;
 public class MemoryStone : MonoBehaviour
 {
     [SerializeField] private SafeAreaTrigger _safeAreaTrigger;
-    [SerializeField] private float activationCost = 5f; // Emberlight cost
+    [SerializeField] private float activationCost = 5f;
+    [SerializeField] private Transform _respawnTranfsorm;
     [SerializeField] private List<GameObject> lightGlows = new List<GameObject>();
     private bool isActivated = false;
 
@@ -47,8 +48,8 @@ public class MemoryStone : MonoBehaviour
         }
 
         _safeAreaTrigger.Activate();
-        
-        //GameManager.Instance.SetRespawnPoint(transform.position);
+
+        GameManager.Instance.SetRespawnPoint(_respawnTranfsorm.position);
         //FogManager.Instance.PushBackFog(transform.position, 20f);
         UIManager.Instance.ShowMessage("Memory Stone Activated!");
     }
