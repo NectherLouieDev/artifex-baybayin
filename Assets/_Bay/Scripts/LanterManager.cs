@@ -241,20 +241,20 @@ public class LanternManager : MonoBehaviour
     {
         bool isLowFuel = FuelPercentage < 0.2f && isLanternOn;
 
-        if (isLowFuel && !isLowFuelWarningActive)
-        {
-            isLowFuelWarningActive = true;
-            lowFuelWarning.SetActive(true);
-            if (lowFuelSound != null)
-            {
-                lanternAudio.PlayOneShot(lowFuelSound);
-            }
-        }
-        else if (!isLowFuel && isLowFuelWarningActive)
-        {
-            isLowFuelWarningActive = false;
-            lowFuelWarning.SetActive(false);
-        }
+        //if (isLowFuel && !isLowFuelWarningActive)
+        //{
+        //    isLowFuelWarningActive = true;
+        //    lowFuelWarning.SetActive(true);
+        //    if (lowFuelSound != null)
+        //    {
+        //        lanternAudio.PlayOneShot(lowFuelSound);
+        //    }
+        //}
+        //else if (!isLowFuel && isLowFuelWarningActive)
+        //{
+        //    isLowFuelWarningActive = false;
+        //    lowFuelWarning.SetActive(false);
+        //}
     }
 
     #endregion

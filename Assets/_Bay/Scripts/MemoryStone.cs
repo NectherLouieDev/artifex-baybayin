@@ -49,7 +49,7 @@ public class MemoryStone : MonoBehaviour
 
         _safeAreaTrigger.Activate();
 
-        GameManager.Instance.SetRespawnPoint(_respawnTranfsorm.position);
+        GameManager.Instance.ActivateMemoryStone(_respawnTranfsorm.position, gameObject.name);
         //FogManager.Instance.PushBackFog(transform.position, 20f);
         UIManager.Instance.ShowMessage("Memory Stone Activated!");
     }

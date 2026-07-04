@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool isGamePaused = false;
 
     [Header("Respawn System")]
+    [SerializeField] private Transform spawnPoint;
     [SerializeField] private Vector3 respawnPosition;
     [SerializeField] private bool hasRespawnPoint = false;
     [SerializeField] private float respawnDelay = 2f;
@@ -62,6 +63,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<MemoryStoneData> memoryStoneData = new List<MemoryStoneData>();
 
     [Header("Artifact")]
+    [SerializeField] private ArtifactSpawner artifactSpawner;
     [SerializeField] private bool artifactDiscovered = false;
     [SerializeField] private GameObject artifactObject;
     [SerializeField] private Renderer artifactRenderer;
@@ -113,6 +115,8 @@ public class GameManager : MonoBehaviour
     private GGTimer respawnTimer;
     private GGTimer victoryTimer;
 
+    private GGTimer artifactSequenceTimer;
+
     void Awake()
     {
         if (Instance == null)
@@ -138,6 +142,10 @@ public class GameManager : MonoBehaviour
         victoryTimer.timerId = "VictoryTimer";
         victoryTimer.OnTimerCompleted += VictoryTimer_OnTimerCompleted;
 
+        artifactSequenceTimer = gameObject.AddComponent<GGTimer>();
+        artifactSequenceTimer.timerId = "ArtifactSequenceTimer";
+        artifactSequenceTimer.OnTimerCompleted += ArtifactSequenceTimer_OnTimerCompleted;
+
         // Initialize
         respawnPosition = Vector3.zero;
         hasRespawnPoint = false;
@@ -149,6 +157,19 @@ public class GameManager : MonoBehaviour
             gameOverPanel.SetActive(false);
         if (victoryPanel != null)
             victoryPanel.SetActive(false);
+
+        // Spawn artifact first
+        artifactSpawner.SpawnArtifact();
+
+        artifactSequenceTimer.StartTimer(6, 1);
+    }
+
+    private void ArtifactSequenceTimer_OnTimerCompleted(object sender, GGTimer e)
+    {
+        if (artifactSpawner.CameraTransform)
+        {
+            artifactSpawner.CameraTransform.gameObject.SetActive(false);
+        }
 
         // Find player
         FindPlayer();
@@ -290,11 +311,13 @@ public class GameManager : MonoBehaviour
             currentPlayer = player;
             respawnPosition = player.transform.position;
             hasRespawnPoint = true;
+
+            SetRespawnPoint(spawnPoint.position);
         }
         else if (playerPrefab != null)
         {
             // Spawn player if not found
-            SpawnPlayer(Vector3.zero);
+            SpawnPlayer(spawnPoint.position);
         }
     }
 
@@ -321,6 +344,8 @@ public class GameManager : MonoBehaviour
         currentPlayer = Instantiate(playerPrefab, position, Quaternion.identity);
         respawnPosition = position;
         hasRespawnPoint = true;
+
+        SetRespawnPoint(respawnPosition);
 
         if (showDebugLogs)
             Debug.Log($"Player spawned at {position}");
