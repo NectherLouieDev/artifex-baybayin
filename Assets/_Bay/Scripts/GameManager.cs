@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 // Enums
@@ -37,6 +38,11 @@ public class GameSaveData
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Input")]
+    [SerializeField] private InputAction _pauseInputAction;
+    [SerializeField] private InputAction _exitMenuInputAction;
+    [SerializeField] private SceneLoader _sceneLoader;
+
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.MainMenu;
     [SerializeField] private int currentAct = 1;
@@ -157,6 +163,37 @@ public class GameManager : MonoBehaviour
 
         // Update UI
         UpdateUI();
+
+        ResumeGame();
+
+        _pauseInputAction.performed += PauseInputAction_performed;
+        _pauseInputAction.Enable();
+
+        _exitMenuInputAction.performed += ExitMenuInputAction_performed;
+    }
+
+    private void ExitMenuInputAction_performed(InputAction.CallbackContext obj)
+    {
+        _exitMenuInputAction.performed -= ExitMenuInputAction_performed;
+        _exitMenuInputAction.Disable();
+
+        _sceneLoader.ChangeScene(ESceneID.MainMenu);
+    }
+
+    private void PauseInputAction_performed(InputAction.CallbackContext obj)
+    {
+        if (!IsGamePaused)
+        {
+            _exitMenuInputAction.Enable();
+            PauseGame();
+        }
+        else
+        {
+            _exitMenuInputAction.Disable();
+            ResumeGame();
+        }
+
+        UIManager.Instance.TogglePauseMenu();
     }
 
     void Update()

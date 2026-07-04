@@ -6959,7 +6959,7 @@ MonoBehaviour:
   IgnoreTag: 
   TransparentLayers:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 8704
   MinimumDistanceFromTarget: 0.3
   AvoidObstacles:
     Enabled: 1

@@ -7,9 +7,6 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Input Action")]
-    [SerializeField] private InputAction _pauseToggleInputAction;
-
     [Header("Main UI References")]
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private TMP_Text messageText;
@@ -118,14 +115,6 @@ public class UIManager : MonoBehaviour
 
         if (tooltipDropButton != null)
             tooltipDropButton.onClick.AddListener(OnTooltipDropPressed);
-
-        _pauseToggleInputAction.performed += PauseToggleInputAction_performed;
-        _pauseToggleInputAction.Enable();
-    }
-
-    private void PauseToggleInputAction_performed(InputAction.CallbackContext obj)
-    {
-        TogglePauseMenu();
     }
 
     void Update()

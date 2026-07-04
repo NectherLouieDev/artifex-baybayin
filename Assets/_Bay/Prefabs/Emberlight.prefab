@@ -15741,7 +15741,7 @@ GameObject:
   - component: {fileID: 9075877748195617263}
   - component: {fileID: 5672678894932470214}
   - component: {fileID: 4299269002077817323}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Emberlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15781,6 +15781,7 @@ MonoBehaviour:
   _visual: {fileID: 8914175126415447461}
   _collider: {fileID: 5672678894932470214}
   _collectFeedback: {fileID: 1232834684495554981}
+  fuelValue: 5
 --- !u!135 &5672678894932470214
 SphereCollider:
   m_ObjectHideFlags: 0
