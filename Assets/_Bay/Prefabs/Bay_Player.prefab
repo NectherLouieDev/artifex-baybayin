@@ -1627,8 +1627,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1874021157320759712}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.012040918, y: 0.94198406, z: -0.033988103, w: 0.33371538}
-  m_LocalPosition: {x: -5.350029, y: 1.6140738, z: 6.603134}
+  m_LocalRotation: {x: 0.043979686, y: 0.16488346, z: -0.007359675, w: 0.9853046}
+  m_LocalPosition: {x: -2.7287445, y: 1.7497191, z: -7.9248505}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2348,6 +2348,7 @@ GameObject:
   - component: {fileID: 446099185559716557}
   - component: {fileID: 2570309600094761316}
   - component: {fileID: 4898488921947696491}
+  - component: {fileID: 2552744158386002767}
   m_Layer: 9
   m_Name: Character
   m_TagString: Player
@@ -2620,6 +2621,24 @@ MonoBehaviour:
   m_target: {fileID: 4728331525108170782}
   m_maskRadius: 4
   m_enableGizmos: 1
+--- !u!114 &2552744158386002767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2586503865741180911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa2de0e5bdb8c3846af87ad8b369f7bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LazyFootstep
+  footstepClips:
+  - {fileID: 8300000, guid: ebbcbfff273fb437d9bb5b10069a7901, type: 3}
+  - {fileID: 8300000, guid: 7f25e4d1fb85541e5b86dd24eec1b76a, type: 3}
+  - {fileID: 8300000, guid: 5a67c3ebaba314bdcb3ae080147fdda7, type: 3}
+  stepInterval: 0.6
+  volume: 1
 --- !u!1 &2624375653481515644
 GameObject:
   m_ObjectHideFlags: 0
@@ -7169,8 +7188,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6811731874784041120}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.012040918, y: 0.941984, z: -0.0339881, w: 0.33371538}
-  m_LocalPosition: {x: -5.350029, y: 1.6140738, z: 6.603134}
+  m_LocalRotation: {x: 0.04397968, y: 0.16488343, z: -0.007359674, w: 0.9853046}
+  m_LocalPosition: {x: -2.7287445, y: 1.7497191, z: -7.9248505}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7253,7 +7272,7 @@ MonoBehaviour:
     SplineCurvature: 0.4
   RecenteringTarget: 2
   HorizontalAxis:
-    Value: 140.98468
+    Value: 19
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -7263,7 +7282,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 0.24258603
+    Value: -3.1999977
     Center: 12
     Range: {x: -10, y: 45}
     Wrap: 0

@@ -272,8 +272,8 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 1
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -5873,6 +5873,8 @@ MonoBehaviour:
   _visuals:
   - {fileID: 4852015148955324275}
   - {fileID: 8021283423213911427}
+  _lights:
+  - {fileID: 2513694898928579234}
   spawnFeedback: {fileID: 5060087955763114899}
 --- !u!1 &4852015148955324275
 GameObject:

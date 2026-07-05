@@ -9934,7 +9934,7 @@ MonoBehaviour:
   stationMesh: {fileID: 7875137923281071059}
   activeMaterial: {fileID: 2100000, guid: 0da39743060b23342bd567515626a7d3, type: 2}
   depletedMaterial: {fileID: 2100000, guid: 639d39910320bac47819cd18daf8f270, type: 2}
-  stationAudio: {fileID: 7211300055125139950}
+  stationAudio: {fileID: 0}
   spawnSound: {fileID: 8300000, guid: adb24518d159048ca9cb62d63113784f, type: 3}
   pickupSound: {fileID: 8300000, guid: ebf4609aed0dc4d82ad954bb603461fd, type: 3}
   depletedSound: {fileID: 8300000, guid: 7e492ad07b6d548eea10ccbd1962e88f, type: 3}
@@ -9946,7 +9946,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3193058216990176043}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -9958,8 +9958,8 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
+  Priority: 101
+  DopplerLevel: 5
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
@@ -10011,7 +10011,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.6977501
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -10026,7 +10026,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.8810806
       inSlope: 0
       outSlope: 0
       tangentMode: 0

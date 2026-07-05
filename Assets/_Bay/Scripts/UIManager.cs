@@ -25,11 +25,15 @@ public class UIManager : MonoBehaviour
     private float pulseTimer = 0f;
 
     [Header("Fuel Display")]
+    [SerializeField] private GameObject fuelDisplay;
     [SerializeField] private Slider fuelSlider;
     [SerializeField] private Image fuelFillImage;
     [SerializeField] private Gradient fuelGradient;
     [SerializeField] private TMP_Text fuelText;
     [SerializeField] private GameObject lowFuelWarning;
+
+    [Header("Quest Display")]
+    [SerializeField] private GameObject questDisplay;
 
     [Header("Interaction")]
     [SerializeField] private TMP_Text interactPromptText;
@@ -92,6 +96,8 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         // Hide all panels initially
+        fuelDisplay.SetActive(false);
+        questDisplay.SetActive(false);
         pauseMenuPanel.SetActive(false);
         victoryPanel.SetActive(false);
         gameOverPanel.SetActive(false);
@@ -215,6 +221,11 @@ public class UIManager : MonoBehaviour
 
     #region Fuel Display
 
+    public void ShowFuelDisplay()
+    {
+        fuelDisplay.SetActive(true);
+    }
+
     public void UpdateFuelDisplay(float fuelPercentage, float currentFuel, float maxFuel)
     {
         if (fuelSlider != null)
@@ -228,6 +239,15 @@ public class UIManager : MonoBehaviour
 
         if (lowFuelWarning != null)
             lowFuelWarning.SetActive(fuelPercentage < 0.2f);
+    }
+
+    #endregion
+
+    #region Quest Display
+
+    public void ShowQuestDisplay()
+    {
+        questDisplay.SetActive(true);
     }
 
     #endregion

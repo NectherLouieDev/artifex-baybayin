@@ -44,13 +44,13 @@ public class LazyFootstep : MonoBehaviour
 
     void PlayRandomFootstep()
     {
-        //if (AudioManager.Instance == null) 
-        //    return;
+        if (AudioManager.Instance == null)
+            return;
 
-        //AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
-        //float pitch = Random.Range(0.9f, 1.1f);
+        AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
+        float pitch = Random.Range(0.9f, 1.1f);
 
-        //AudioManager.Instance.PlaySFX(clip, 0.2f, pitch);
+        AudioManager.Instance.PlaySFX(clip, 0.2f, pitch);
         //AudioManager.Instance.PlaySFXAtPosition(clip, transform.position, volume, pitch);
     }
 }

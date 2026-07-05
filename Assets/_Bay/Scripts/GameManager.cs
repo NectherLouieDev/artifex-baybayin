@@ -65,9 +65,6 @@ public class GameManager : MonoBehaviour
     [Header("Artifact")]
     [SerializeField] private ArtifactSpawner artifactSpawner;
     [SerializeField] private bool artifactDiscovered = false;
-    [SerializeField] private GameObject artifactObject;
-    [SerializeField] private Renderer artifactRenderer;
-    [SerializeField] private Light artifactLight;
 
     [Header("Fog System Reference")]
     [SerializeField] private FogManager fogManager;
@@ -114,7 +111,7 @@ public class GameManager : MonoBehaviour
     // Timers
     private GGTimer respawnTimer;
     private GGTimer victoryTimer;
-
+    private GGTimer spawnDelayTimer;
     private GGTimer artifactSequenceTimer;
 
     void Awake()
@@ -133,6 +130,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        AudioManager.Instance.PlayBGM();
+
         // Initialize timers
         respawnTimer = gameObject.AddComponent<GGTimer>();
         respawnTimer.timerId = "RespawnTimer";
@@ -141,6 +140,10 @@ public class GameManager : MonoBehaviour
         victoryTimer = gameObject.AddComponent<GGTimer>();
         victoryTimer.timerId = "VictoryTimer";
         victoryTimer.OnTimerCompleted += VictoryTimer_OnTimerCompleted;
+
+        spawnDelayTimer = gameObject.AddComponent<GGTimer>();
+        spawnDelayTimer.timerId = "Spawn Delayer";
+        spawnDelayTimer.OnTimerCompleted += SpawnDelayTimer_OnTimerCompleted;
 
         artifactSequenceTimer = gameObject.AddComponent<GGTimer>();
         artifactSequenceTimer.timerId = "ArtifactSequenceTimer";
@@ -158,7 +161,11 @@ public class GameManager : MonoBehaviour
         if (victoryPanel != null)
             victoryPanel.SetActive(false);
 
-        // Spawn artifact first
+        spawnDelayTimer.StartTimer(1, 1);
+    }
+
+    private void SpawnDelayTimer_OnTimerCompleted(object sender, GGTimer e)
+    {
         artifactSpawner.SpawnArtifact();
 
         artifactSequenceTimer.StartTimer(6, 1);
@@ -166,11 +173,8 @@ public class GameManager : MonoBehaviour
 
     private void ArtifactSequenceTimer_OnTimerCompleted(object sender, GGTimer e)
     {
-        if (artifactSpawner.CameraTransform)
-        {
-            artifactSpawner.CameraTransform.gameObject.SetActive(false);
-        }
-
+        artifactSpawner.HideStone();
+        
         // Find player
         FindPlayer();
 
@@ -181,6 +185,9 @@ public class GameManager : MonoBehaviour
             gameAudio.loop = true;
             gameAudio.Play();
         }
+
+        UIManager.Instance.ShowFuelDisplay();
+        UIManager.Instance.ShowQuestDisplay();
 
         // Update UI
         UpdateUI();
@@ -197,6 +204,11 @@ public class GameManager : MonoBehaviour
     {
         _exitMenuInputAction.performed -= ExitMenuInputAction_performed;
         _exitMenuInputAction.Disable();
+
+        _pauseInputAction.performed -= PauseInputAction_performed;
+        _pauseInputAction.Disable();
+
+        ResumeGame();
 
         _sceneLoader.ChangeScene(ESceneID.MainMenu);
     }
@@ -453,20 +465,7 @@ public class GameManager : MonoBehaviour
         UIManager.Instance?.ShowMessage("All Memory Stones activated! The path to the artifact is revealed.");
 
         // Reveal artifact location
-        if (artifactObject != null)
-        {
-            // Make artifact visible or glow
-            if (artifactRenderer != null)
-            {
-                artifactRenderer.enabled = true;
-            }
-
-            // Add glow effect
-            if (artifactLight != null)
-            {
-                artifactLight.enabled = true;
-            }
-        }
+        artifactSpawner.RevealStone();
     }
 
     #endregion

@@ -5,11 +5,10 @@ using UnityEngine;
 public class ArtifactSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject artifactPrefab;
-    [SerializeField] private Transform cameraTransform;
     [SerializeField] public List<Transform> spawnPoints = new List<Transform>();
     private List<int> previousSpawnIndices = new List<int>();
 
-    public Transform CameraTransform {  get { return cameraTransform; } }
+    private BaybayinStone _stone;
 
     public void SpawnArtifact()
     {
@@ -20,11 +19,22 @@ public class ArtifactSpawner : MonoBehaviour
         
         if (g.TryGetComponent(out BaybayinStone stone))
         {
-            stone.Spawn();
-            cameraTransform = stone.CameraTransform;
+            _stone = stone;
+            _stone.Spawn();
         }
 
         AddPreviousSpawnIndex(spawnIndex);
+    }
+
+    public void HideStone()
+    {
+        _stone.CameraTransform.gameObject.SetActive(false);
+        _stone.Hide();
+    }
+
+    public void RevealStone()
+    {
+        _stone.Reveal();
     }
 
     public int SelectSpawnIndex()
