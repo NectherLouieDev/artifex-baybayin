@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Multiplayer.PlayMode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -55,11 +56,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool hasRespawnPoint = false;
     [SerializeField] private float respawnDelay = 2f;
     [SerializeField] private GameObject playerPrefab;
-    private GameObject currentPlayer;
+    
+    private PlayerIdentity currentPlayer;
 
     [Header("Memory Stones")]
     [SerializeField] private int memoryStonesActivated = 0;
-    [SerializeField] private int totalMemoryStones = 3;
+    [SerializeField] private int totalMemoryStones = 4;
     [SerializeField] private List<MemoryStoneData> memoryStoneData = new List<MemoryStoneData>();
 
     [Header("Artifact")]
@@ -106,7 +108,7 @@ public class GameManager : MonoBehaviour
     public bool HasRespawnPoint => hasRespawnPoint;
     public int MemoryStonesActivated => memoryStonesActivated;
     public bool ArtifactDiscovered => artifactDiscovered;
-    public GameObject CurrentPlayer => currentPlayer;
+    public PlayerIdentity CurrentPlayer => currentPlayer;
 
     // Timers
     private GGTimer respawnTimer;
@@ -150,7 +152,7 @@ public class GameManager : MonoBehaviour
         artifactSequenceTimer.OnTimerCompleted += ArtifactSequenceTimer_OnTimerCompleted;
 
         // Initialize
-        respawnPosition = Vector3.zero;
+        respawnPosition = spawnPoint.position;
         hasRespawnPoint = false;
         memoryStonesActivated = 0;
         artifactDiscovered = false;
@@ -161,7 +163,7 @@ public class GameManager : MonoBehaviour
         if (victoryPanel != null)
             victoryPanel.SetActive(false);
 
-        spawnDelayTimer.StartTimer(1, 1);
+        spawnDelayTimer.StartTimer(0.1f, 1);
     }
 
     private void SpawnDelayTimer_OnTimerCompleted(object sender, GGTimer e)
@@ -277,7 +279,7 @@ public class GameManager : MonoBehaviour
             if (LanternManager.Instance != null)
             {
                 // Refill some fuel on respawn
-                LanternManager.Instance.Refuel(5f);
+                LanternManager.Instance.RespawnFuel();
                 LanternManager.Instance.TurnOnLantern();
             }
 
@@ -320,7 +322,7 @@ public class GameManager : MonoBehaviour
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
-            currentPlayer = player;
+            currentPlayer = player.GetComponent<PlayerManager>().Identity;
             respawnPosition = player.transform.position;
             hasRespawnPoint = true;
 
@@ -335,7 +337,7 @@ public class GameManager : MonoBehaviour
 
     public void SetPlayer(GameObject player)
     {
-        currentPlayer = player;
+        currentPlayer = player.GetComponent<PlayerManager>().Identity;
         respawnPosition = player.transform.position;
         hasRespawnPoint = true;
     }
@@ -348,12 +350,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (currentPlayer != null)
-        {
-            Destroy(currentPlayer);
-        }
-
-        currentPlayer = Instantiate(playerPrefab, position, Quaternion.identity);
+        GameObject playerGo = Instantiate(playerPrefab, position, Quaternion.identity);
+        currentPlayer = playerGo.GetComponent<PlayerManager>().Identity;
         respawnPosition = position;
         hasRespawnPoint = true;
 
@@ -373,7 +371,10 @@ public class GameManager : MonoBehaviour
         hasRespawnPoint = true;
 
         if (showDebugLogs)
+        {
             Debug.Log($"Respawn point set at {position}");
+            Debug.Log($"Spawn point at {spawnPoint.position}");
+        }
 
         // Save to PlayerPrefs for persistence
         PlayerPrefs.SetFloat("RespawnX", position.x);
@@ -393,14 +394,19 @@ public class GameManager : MonoBehaviour
         }
 
         // Show game over
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(true);
-            if (gameOverSound != null && gameAudio != null)
-            {
-                gameAudio.PlayOneShot(gameOverSound);
-            }
-        }
+        //if (gameOverPanel != null)
+        //{
+        //    gameOverPanel.SetActive(true);
+        //    if (gameOverSound != null && gameAudio != null)
+        //    {
+        //        gameAudio.PlayOneShot(gameOverSound);
+        //    }
+        //}
+
+        // DO THIS
+        // Disable Player Input
+        // Animate Respawn Anim
+        // Respawn
 
         // Start respawn timer
         if (!respawnTimer.IsRunning())
@@ -422,6 +428,31 @@ public class GameManager : MonoBehaviour
             float z = PlayerPrefs.GetFloat("RespawnZ", 0f);
             respawnPosition = new Vector3(x, y, z);
             hasRespawnPoint = true;
+        }
+    }
+
+    #endregion
+
+    #region End Scene
+    public void GameOver()
+    {
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+            if (gameOverSound != null && gameAudio != null)
+            {
+                gameAudio.PlayOneShot(gameOverSound);
+            }
+        }
+
+        if (!IsGamePaused)
+        {
+            _exitMenuInputAction.Enable();
+
+            _pauseInputAction.performed -= PauseInputAction_performed;
+            _pauseInputAction.Disable();
+            
+            PauseGame();
         }
     }
 
@@ -592,6 +623,8 @@ public class GameManager : MonoBehaviour
         {
             memoryStoneProgressText.text = $"Memory Stones: {memoryStonesActivated}/{totalMemoryStones}";
         }
+
+        UIManager.Instance.UpdateQuestText(memoryStonesActivated, totalMemoryStones);
     }
 
     #endregion

@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+using Random = UnityEngine.Random;
+
 public class EmberlightStation : MonoBehaviour
 {
     [Header("Station Configuration")]
     [SerializeField] private string stationName = "Emberlight Station";
     [SerializeField] private int maxEmberlights = 5;
     [SerializeField] private float spawnRadius = 2f;
-    [SerializeField] private float spawnInterval = 3f;
+    [SerializeField] private float spawnIntervalMin = 8f;
+    [SerializeField] private float spawnIntervalMax = 16f;
     [SerializeField] private float spawnForce = 5f;
 
     [Header("Emberlight Prefab")]
@@ -33,7 +36,6 @@ public class EmberlightStation : MonoBehaviour
 
     // Runtime data
     private List<GameObject> spawnedEmberlights = new List<GameObject>();
-    private bool isDepleted = false;
 
     // Spawning timer
     private GGTimer spawnTimer;
@@ -142,7 +144,6 @@ public class EmberlightStation : MonoBehaviour
         // Check if we've reached max
         if (spawnCount >= maxEmberlights)
         {
-            isDepleted = false;
             OnStationRefilled?.Invoke();
             if (showDebugLogs)
                 Debug.Log($"[{stationName}] Station is fully stocked!");
@@ -152,15 +153,21 @@ public class EmberlightStation : MonoBehaviour
             // Start timer for next spawn
             if (!spawnTimer.IsRunning())
             {
-                spawnTimer.StartTimer(spawnInterval, 0); // 0 = infinite loops
+                spawnTimer.StartTimer(GetSpawnInterval(), 0); // 0 = infinite loops
             }
         }
+    }
+
+    private float GetSpawnInterval()
+    {
+        float spawnInterval = Random.Range(spawnIntervalMin, spawnIntervalMax);
+        return spawnInterval;
     }
 
     void OnSpawnTimerLoop(object sender, GGTimer timer)
     {
         // Only spawn if we haven't reached max and not depleted
-        if (spawnCount < maxEmberlights && !isDepleted)
+        if (spawnCount < maxEmberlights)
         {
             SpawnEmberlight();
         }
@@ -174,7 +181,7 @@ public class EmberlightStation : MonoBehaviour
     void OnSpawnTimerCompleted(object sender, GGTimer timer)
     {
         // This shouldn't happen with infinite loops, but just in case
-        if (spawnCount < maxEmberlights && !isDepleted)
+        if (spawnCount < maxEmberlights)
         {
             SpawnEmberlight();
         }
@@ -199,18 +206,9 @@ public class EmberlightStation : MonoBehaviour
             if (showDebugLogs)
                 Debug.Log($"[{stationName}] Emberlight picked up. Remaining: {spawnCount}");
 
-            // Check if depleted
-            if (spawnCount <= 0)
+            if (!spawnTimer.IsRunning() && spawnCount < maxEmberlights)
             {
-                SetDepleted();
-            }
-            else
-            {
-                // Start respawning if we have room for more
-                if (!spawnTimer.IsRunning() && spawnCount < maxEmberlights)
-                {
-                    spawnTimer.StartTimer(spawnInterval, 0);
-                }
+                spawnTimer.StartTimer(GetSpawnInterval(), 0);
             }
 
             UpdateUI();
@@ -220,8 +218,6 @@ public class EmberlightStation : MonoBehaviour
 
     void SetDepleted()
     {
-        isDepleted = true;
-
         if (depletedSound != null && stationAudio != null)
         {
             stationAudio.PlayOneShot(depletedSound);
@@ -237,7 +233,7 @@ public class EmberlightStation : MonoBehaviour
         // Start respawning if timer isn't already running
         if (!spawnTimer.IsRunning())
         {
-            spawnTimer.StartTimer(spawnInterval, 0);
+            spawnTimer.StartTimer(GetSpawnInterval(), 0);
         }
 
         // Show message to player
@@ -257,25 +253,12 @@ public class EmberlightStation : MonoBehaviour
         {
             stationGlow.intensity = Mathf.Lerp(0.2f, 2f, fuelRatio);
             stationGlow.color = Color.Lerp(new Color(0.5f, 0.3f, 0.1f), new Color(1f, 0.8f, 0.3f), fuelRatio);
-
-            // Dim when depleted
-            if (isDepleted)
-            {
-                stationGlow.intensity = 0.1f;
-            }
         }
 
         // Update material
         if (stationMesh != null && activeMaterial != null && depletedMaterial != null)
         {
-            if (isDepleted || spawnCount <= 0)
-            {
-                stationMesh.material = depletedMaterial;
-            }
-            else
-            {
-                stationMesh.material = activeMaterial;
-            }
+            stationMesh.material = activeMaterial;
         }
 
         // Update idle particles based on count
@@ -306,11 +289,6 @@ public class EmberlightStation : MonoBehaviour
     public int GetMaxEmberlights()
     {
         return maxEmberlights;
-    }
-
-    public bool IsDepleted()
-    {
-        return isDepleted;
     }
 
     public List<GameObject> GetSpawnedEmberlights()

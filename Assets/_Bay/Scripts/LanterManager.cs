@@ -8,8 +8,8 @@ public class LanternManager : MonoBehaviour
     [Header("Lantern Settings")]
     [SerializeField] private float maxFuel = 20f;
     [SerializeField] private float currentFuel;
-    [SerializeField] private float decayRate = 0.5f; // Fuel per second
-    [SerializeField] private float decayMultiplier = 1f; // Modified by fog, items
+    [SerializeField] private float decayRate = 0.5f;
+    [SerializeField] private float decayMultiplier = 1f;
 
     [Header("Light Components")]
     [SerializeField] private Light lanternLight;
@@ -24,13 +24,6 @@ public class LanternManager : MonoBehaviour
     [SerializeField] private float maxSpotAngle = 60f;
     [SerializeField] private float minRange = 5f;
     [SerializeField] private float maxRange = 15f;
-
-    [Header("UI References")]
-    [SerializeField] private Slider fuelSlider;
-    [SerializeField] private Image fuelFillImage;
-    [SerializeField] private Gradient fuelGradient;
-    [SerializeField] private GameObject lowFuelWarning;
-    [SerializeField] private TMP_Text fuelText;
 
     [Header("Item Effects")]
     private float temporaryDecayReduction = 1f;
@@ -111,6 +104,7 @@ public class LanternManager : MonoBehaviour
         if (currentFuel <= 0)
         {
             TurnOffLantern();
+            GameManager.Instance.RespawnPlayer();
         }
 
         // Update audio pitch based on fuel level
@@ -135,6 +129,28 @@ public class LanternManager : MonoBehaviour
     public void Refuel(float amount)
     {
         currentFuel = Mathf.Min(currentFuel + amount, maxFuel);
+        UpdateUI();
+
+        if (!isLanternOn)
+        {
+            TurnOnLantern();
+        }
+
+        if (refuelSound != null)
+        {
+            AudioSource.PlayClipAtPoint(refuelSound, transform.position);
+        }
+
+        // Visual feedback
+        if (lanternParticles != null)
+        {
+            lanternParticles.Play();
+        }
+    }
+
+    public void RespawnFuel()
+    {
+        currentFuel = maxFuel;
         UpdateUI();
 
         if (!isLanternOn)
@@ -216,7 +232,8 @@ public class LanternManager : MonoBehaviour
 
     void HandleFlicker()
     {
-        if (!isLanternOn) return;
+        if (!isLanternOn) 
+            return;
 
         flickerTimer += Time.deltaTime;
         if (flickerTimer >= flickerInterval)
@@ -241,20 +258,18 @@ public class LanternManager : MonoBehaviour
     {
         bool isLowFuel = FuelPercentage < 0.2f && isLanternOn;
 
-        //if (isLowFuel && !isLowFuelWarningActive)
-        //{
-        //    isLowFuelWarningActive = true;
-        //    lowFuelWarning.SetActive(true);
-        //    if (lowFuelSound != null)
-        //    {
-        //        lanternAudio.PlayOneShot(lowFuelSound);
-        //    }
-        //}
-        //else if (!isLowFuel && isLowFuelWarningActive)
-        //{
-        //    isLowFuelWarningActive = false;
-        //    lowFuelWarning.SetActive(false);
-        //}
+        if (isLowFuel && !isLowFuelWarningActive)
+        {
+            isLowFuelWarningActive = true;
+            if (lowFuelSound != null)
+            {
+                lanternAudio.PlayOneShot(lowFuelSound);
+            }
+        }
+        else if (!isLowFuel && isLowFuelWarningActive)
+        {
+            isLowFuelWarningActive = false;
+        }
     }
 
     #endregion
@@ -335,30 +350,7 @@ public class LanternManager : MonoBehaviour
 
     void UpdateUI()
     {
-        //if (fuelSlider != null)
-        //{
-        //    fuelSlider.value = FuelPercentage;
-        //}
-
-        //if (fuelFillImage != null)
-        //{
-        //    fuelFillImage.color = fuelGradient.Evaluate(FuelPercentage);
-        //}
-
-        //if (fuelText != null)
-        //{
-        //    fuelText.text = $"{Mathf.CeilToInt(currentFuel)} / {maxFuel}";
-        //}
-
         UIManager.Instance.UpdateFuelDisplay(FuelPercentage, currentFuel, maxFuel);
-    }
-
-    public void ShowLowFuelWarning(bool show)
-    {
-        if (lowFuelWarning != null)
-        {
-            lowFuelWarning.SetActive(show);
-        }
     }
 
     #endregion

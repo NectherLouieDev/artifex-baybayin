@@ -95,6 +95,11 @@ public class RecipeDatabase : MonoBehaviour
             output = (carriedItem as ItemCooked).RecipeInputType;
         }
 
+        if (carriedItem is ItemKey)
+        {
+            output = (carriedItem as ItemKey).RecipeInputType;
+        }
+
         return output;
     }
 }

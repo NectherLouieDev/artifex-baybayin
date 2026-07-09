@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+public class TimerEventArgs { }
+
 public class GGTimer : MonoBehaviour
 {
     public event EventHandler<GGTimer> OnTimerStarted;
@@ -17,7 +19,11 @@ public class GGTimer : MonoBehaviour
     private int _targetLoops = 0;
     private bool _running = false;
 
-    public void StartTimer(float targetTime, int targetLoops, bool countdown = false)
+    private TimerEventArgs _eventArgs;
+
+    public TimerEventArgs EventArgs { get { return _eventArgs; } }
+
+    public void StartTimer(float targetTime, int targetLoops, bool countdown = false, TimerEventArgs eventArgs = default)
     {
         _running = true;
         _countdown = countdown;
@@ -34,6 +40,8 @@ public class GGTimer : MonoBehaviour
             _currentTime = 0f;
             _targetTime = targetTime;
         }
+
+        _eventArgs = eventArgs;
 
         OnTimerStarted?.Invoke(this, this);
     }

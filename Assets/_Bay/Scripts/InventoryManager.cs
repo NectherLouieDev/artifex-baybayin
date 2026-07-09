@@ -14,30 +14,17 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private InputAction _useItem5InputAction;
 
     [Header("Inventory Configuration")]
-    [SerializeField] private int maxItemSlots = 5;
+    [SerializeField] private int maxItemSlots = 4;
     [SerializeField] private int maxFuelSlots = 1; // Fixed at 1
-
-    [Header("UI References")]
-    [SerializeField] private GameObject inventoryPanel;
-    [SerializeField] private Image[] itemSlotImages; // 5 slots
-    [SerializeField] private Image fuelSlotImage; // 1 fuel slot
-    [SerializeField] private Text[] itemSlotCountTexts; // For stackable items (optional)
-    [SerializeField] private Text fuelCountText;
-    [SerializeField] private GameObject itemTooltipPanel;
-    [SerializeField] private Text tooltipNameText;
-    [SerializeField] private Text tooltipOriginText;
-    [SerializeField] private Text tooltipDescriptionText;
-    [SerializeField] private Text tooltipEffectText;
-    [SerializeField] private Button useItemButton;
-    [SerializeField] private Button dropItemButton;
 
     [Header("Item Prefabs")]
     [SerializeField] private GameObject itemPickupPrefab;
 
     // Runtime data
-    private InventoryItem[] itemSlots = new InventoryItem[5];
-    private int fuelAmount = 0; // Emberlight fuel
+    private InventoryItem[] itemSlots = new InventoryItem[4];
+    private int emberlightAmount = 0;
     private int selectedSlotIndex = -1;
+    private List<GGTimer> _cdTimers = new List<GGTimer>();
 
     // Events
     public System.Action<int> OnItemUsed;
@@ -46,6 +33,12 @@ public class InventoryManager : MonoBehaviour
 
     // Singleton
     public static InventoryManager Instance;
+
+    // Timer Event Args
+    public class CustomTimerEventArgs : TimerEventArgs
+    {
+        public int SlotIndex { get; set; }
+    }
 
     void Awake()
     {
@@ -61,6 +54,12 @@ public class InventoryManager : MonoBehaviour
         for (int i = 0; i < maxItemSlots; i++)
         {
             itemSlots[i] = null;
+
+            GGTimer cdTimer = gameObject.AddComponent<GGTimer>();
+            cdTimer.timerId = "CD Timer " + i;
+            cdTimer.OnTimerCompleted += CDTimer_OnTimerCompleted;
+            cdTimer.OnTimerUpdated += CDTimer_OnTimerUpdated;
+            _cdTimers.Add(cdTimer);
         }
 
         UpdateUI();
@@ -106,7 +105,11 @@ public class InventoryManager : MonoBehaviour
     }
     private void UseItem5InputAction_performed(InputAction.CallbackContext obj)
     {
-        UseItem(4);
+        if (LanternManager.Instance.FuelPercentage >= 0.9f)
+            return;
+
+        LanternManager.Instance.Refuel(5);
+        UseEmberlight();
     }
 
     private void InventoryToggleInputAction_performed(InputAction.CallbackContext obj)
@@ -156,6 +159,7 @@ public class InventoryManager : MonoBehaviour
             if (itemSlots[i] == null)
             {
                 itemSlots[i] = new InventoryItem(item);
+                itemSlots[i].isActive = true;
                 UpdateUI();
                 return true;
             }
@@ -167,20 +171,35 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
-    public bool AddFuel(int amount)
+    public bool AddEmberlight(int amount)
     {
-        fuelAmount += amount;
-        OnFuelChanged?.Invoke(fuelAmount);
+        emberlightAmount += amount;
+        OnFuelChanged?.Invoke(emberlightAmount);
         UpdateUI();
         return true;
     }
 
+    public void UseEmberlight()
+    {
+        if (emberlightAmount <= 0)
+            return;
+
+        emberlightAmount -= 1;
+        UpdateUI();
+    }
+
     public bool UseItem(int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex >= maxItemSlots) return false;
-        if (itemSlots[slotIndex] == null) return false;
+        if (slotIndex < 0 || slotIndex >= maxItemSlots) 
+            return false;
+
+        if (itemSlots[slotIndex] == null) 
+            return false;
 
         InventoryItem item = itemSlots[slotIndex];
+
+        if (!item.isActive)
+            return false;
 
         // Apply item effect
         ApplyItemEffect(item);
@@ -192,15 +211,41 @@ public class InventoryManager : MonoBehaviour
         }
         else
         {
-            itemSlots[slotIndex] = null;
+            // Cooldown
+            //itemSlots[slotIndex] = null;
+            item.isActive = false;
+            _cdTimers[slotIndex].StartTimer(item.cooldown, 1, true, new CustomTimerEventArgs
+            {
+                SlotIndex = slotIndex,
+            });
         }
 
         OnItemUsed?.Invoke(slotIndex);
         UpdateUI();
         CloseTooltip();
 
-        Debug.Log("Used: " + item.itemName);
+        UIManager.Instance.ShowMessage("Used: " + item.itemName);
         return true;
+    }
+
+    private void CDTimer_OnTimerUpdated(object sender, GGTimer e)
+    {
+        int slotIndex = (e.EventArgs as CustomTimerEventArgs).SlotIndex;
+        int currentTime = Mathf.FloorToInt(e.GetCurrentTime());
+
+        UIManager.Instance.UpdateItemSlotCounter(slotIndex, currentTime);
+    }
+
+    private void CDTimer_OnTimerCompleted(object sender, GGTimer e)
+    {
+        int slotIndex = (e.EventArgs as CustomTimerEventArgs).SlotIndex;
+        int currentTime = Mathf.FloorToInt(e.GetCurrentTime());
+
+        UIManager.Instance.UpdateItemSlotCounter(slotIndex, currentTime);
+
+        InventoryItem item = itemSlots[slotIndex];
+        item.isActive = true;
+        UpdateUI();
     }
 
     public bool DropItem(int slotIndex)
@@ -224,9 +269,9 @@ public class InventoryManager : MonoBehaviour
         return true;
     }
 
-    public int GetFuelAmount()
+    public int GetEmberlightAmount()
     {
-        return fuelAmount;
+        return emberlightAmount;
     }
 
     public bool HasItem(string itemName)
@@ -277,35 +322,30 @@ public class InventoryManager : MonoBehaviour
     {
         switch (item.effectType)
         {
-            case ItemEffectType.DecayReduction:
+            case ItemEffectType.TnalakDecayReduction:
                 // Tnalak Cloth - 30% decay reduction for 30 seconds
                 LanternManager.Instance.ApplyDecayReduction(0.7f, 30f);
                 UIManager.Instance.ShowMessage("Tnalak Cloth: Lantern decay reduced by 30% for 30s!");
                 break;
 
-            case ItemEffectType.RangeBoost:
+            case ItemEffectType.KulintangEcho:
                 // Kulintang Gong Essence - 50% range boost for 20 seconds
+                // Enable Echo Component
                 LanternManager.Instance.ApplyRangeBoost(1.5f, 20f);
                 UIManager.Instance.ShowMessage("Kulintang Gong: Lantern range boosted for 20s!");
                 break;
 
-            case ItemEffectType.InstantFuel:
-                // Annatto Seed Oil - Restores 10 fuel instantly
-                LanternManager.Instance.Refuel(10f);
+            case ItemEffectType.AnnattoRefill:
+                // Annatto Seed Oil - Refills fuel
+                LanternManager.Instance.RespawnFuel();
                 UIManager.Instance.ShowMessage("Annatto Oil: +10 Emberlight!");
                 break;
 
-            case ItemEffectType.CraftTorch:
+            case ItemEffectType.KawayanTorch:
                 // Kawayan Bamboo Torch - Craftable, serves as backup light
                 // This would create a torch item in world or temporary light
                 UIManager.Instance.ShowMessage("Kawayan Torch crafted!");
                 // Could spawn a torch object or provide temporary light
-                break;
-
-            case ItemEffectType.PulseBoost:
-                // Maguindanao Inaul Cloth - Pulse effect pushes back fog
-                //FogManager.Instance.PushBackFog(transform.position, 15f);
-                UIManager.Instance.ShowMessage("Inaul Cloth: Fog pushed back!");
                 break;
 
             default:
@@ -340,52 +380,7 @@ public class InventoryManager : MonoBehaviour
 
     void UpdateUI()
     {
-        /* Local update
-        //// Update item slots
-        //for (int i = 0; i < maxItemSlots; i++)
-        //{
-        //    if (itemSlots[i] != null)
-        //    {
-        //        itemSlotImages[i].sprite = itemSlots[i].icon;
-        //        itemSlotImages[i].color = Color.white;
-        //        itemSlotImages[i].gameObject.SetActive(true);
-
-        //        // Show stack count if stackable and > 1
-        //        if (itemSlots[i].isStackable && itemSlots[i].currentStack > 1)
-        //        {
-        //            itemSlotCountTexts[i].text = itemSlots[i].currentStack.ToString();
-        //            itemSlotCountTexts[i].gameObject.SetActive(true);
-        //        }
-        //        else
-        //        {
-        //            itemSlotCountTexts[i].gameObject.SetActive(false);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        itemSlotImages[i].sprite = null;
-        //        itemSlotImages[i].color = new Color(0, 0, 0, 0);
-        //        itemSlotCountTexts[i].gameObject.SetActive(false);
-        //    }
-        //}
-
-        //// Update fuel slot
-        //if (fuelAmount > 0)
-        //{
-        //    fuelSlotImage.sprite = GetFuelIcon();
-        //    fuelSlotImage.color = Color.white;
-        //    fuelCountText.text = fuelAmount.ToString();
-        //    fuelCountText.gameObject.SetActive(true);
-        //}
-        //else
-        //{
-        //    fuelSlotImage.sprite = null;
-        //    fuelSlotImage.color = new Color(0, 0, 0, 0);
-        //    fuelCountText.gameObject.SetActive(false);
-        //}
-        */
-
-        UIManager.Instance.UpdateInventoryUI(itemSlots, fuelAmount);
+        UIManager.Instance.UpdateInventoryUI(itemSlots, emberlightAmount);
     }
 
     Sprite GetFuelIcon()
@@ -404,35 +399,10 @@ public class InventoryManager : MonoBehaviour
         {
             CloseTooltip();
         }
-
-        //inventoryPanel.SetActive(!inventoryPanel.activeSelf);
-        //if (!inventoryPanel.activeSelf)
-        //{
-        //    CloseTooltip();
-        //}
-    }
-
-    public void OpenTooltip(int slotIndex)
-    {
-        if (slotIndex < 0 || slotIndex >= maxItemSlots) return;
-        if (itemSlots[slotIndex] == null) return;
-
-        selectedSlotIndex = slotIndex;
-        InventoryItem item = itemSlots[slotIndex];
-
-        tooltipNameText.text = item.itemName;
-        tooltipOriginText.text = "Origin: " + item.culturalOrigin;
-        tooltipDescriptionText.text = item.description;
-        tooltipEffectText.text = "Effect: " + item.effectDescription;
-
-        itemTooltipPanel.SetActive(true);
     }
 
     public void CloseTooltip()
     {
-        //itemTooltipPanel.SetActive(false);
-        //selectedSlotIndex = -1;
-
         UIManager.Instance.CloseTooltip();
     }
 
@@ -459,7 +429,7 @@ public class InventoryManager : MonoBehaviour
     public InventorySaveData GetSaveData()
     {
         InventorySaveData data = new InventorySaveData();
-        data.fuelAmount = fuelAmount;
+        data.emberlightAmount = emberlightAmount;
         data.itemData = new List<ItemSaveData>();
 
         for (int i = 0; i < maxItemSlots; i++)
@@ -484,7 +454,7 @@ public class InventoryManager : MonoBehaviour
             itemSlots[i] = null;
         }
 
-        fuelAmount = data.fuelAmount;
+        emberlightAmount = data.emberlightAmount;
 
         // Load items
         for (int i = 0; i < data.itemData.Count && i < maxItemSlots; i++)
@@ -521,6 +491,8 @@ public class InventoryItem
     public ItemEffectType effectType;
     public bool isStackable;
     public int currentStack;
+    public float cooldown;
+    public bool isActive;
 
     public InventoryItem(InventoryItemData data)
     {
@@ -534,6 +506,8 @@ public class InventoryItem
             effectType = data.effectType;
             isStackable = data.isStackable;
             currentStack = 1;
+            cooldown = data.cooldown;
+            isActive = data.isActive;
         }
     }
 
@@ -548,6 +522,8 @@ public class InventoryItem
         effectType = other.effectType;
         isStackable = other.isStackable;
         currentStack = other.currentStack;
+        cooldown = other.cooldown;
+        isActive = other.isActive;
     }
 }
 
@@ -561,22 +537,23 @@ public class InventoryItemData : ScriptableObject
     public Sprite icon;
     public ItemEffectType effectType;
     public bool isStackable;
+    public float cooldown;
+    public bool isActive;
 }
 
 public enum ItemEffectType
 {
     None,
-    DecayReduction,      // Tnalak Cloth
-    RangeBoost,          // Kulintang Gong Essence
-    InstantFuel,         // Annatto Seed Oil
-    CraftTorch,          // Kawayan Bamboo Torch
-    PulseBoost           // Maguindanao Inaul Cloth
+    TnalakDecayReduction,      // Tnalak Cloth
+    KulintangEcho,          // Kulintang Gong Essence
+    AnnattoRefill,         // Annatto Seed Oil
+    KawayanTorch          // Kawayan Bamboo Torch
 }
 
 [System.Serializable]
 public class InventorySaveData
 {
-    public int fuelAmount;
+    public int emberlightAmount;
     public List<ItemSaveData> itemData;
 }
 

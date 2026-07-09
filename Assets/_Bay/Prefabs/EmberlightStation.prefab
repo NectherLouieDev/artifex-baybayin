@@ -9924,7 +9924,8 @@ MonoBehaviour:
   stationName: Emberlight Station
   maxEmberlights: 2
   spawnRadius: 8
-  spawnInterval: 30
+  spawnIntervalMin: 8
+  spawnIntervalMax: 16
   spawnForce: 8
   emberlightPrefab: {fileID: 6370477743709815354, guid: 82601716d5ba1ac41ae012919462661c, type: 3}
   spawnParent: {fileID: 7978628164525103058}
@@ -9946,7 +9947,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3193058216990176043}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}

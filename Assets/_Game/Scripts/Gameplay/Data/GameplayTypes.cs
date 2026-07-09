@@ -30,7 +30,16 @@ public enum ERecipeInputType
 
     // Assembled
     BlastBomb,
-    RepairBomb
+    RepairBomb,
+
+    // Jam
+    Key_Tnalak,
+    Key_Inaul,
+    Key_Kawayan,
+    Key_Kulintang,
+    Key_Annatto,
+
+    Equip_Tnalak
 }
 
 public enum ERecipeOutputType
@@ -46,7 +55,14 @@ public enum ERecipeOutputType
     FriedBomb,
 
     // Assembled
-    BlastBomb
+    BlastBomb,
+
+    // Jam
+    TnalakCloth,
+    InaulCloth,
+    Kawayan,
+    Kulintang,
+    Annatto
 }
 
 public enum EAssembledType

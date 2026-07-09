@@ -7,7 +7,7 @@ public class Emberlight : MonoBehaviour
     [SerializeField] private GameObject _visual;
     [SerializeField] private Collider _collider;
     [SerializeField] private MMFeedbacks _collectFeedback;
-    [SerializeField] private int fuelValue = 5;
+    [SerializeField] private int emberlightValue = 1;
 
     // References
     private EmberlightStation station;
@@ -35,7 +35,8 @@ public class Emberlight : MonoBehaviour
     private void Pickup()
     {
         // Add fuel to lantern
-        LanternManager.Instance?.Refuel(fuelValue);
+        //LanternManager.Instance?.Refuel(fuelValue);
+        InventoryManager.Instance.AddEmberlight(emberlightValue);
 
         // Play feedback
         _collectFeedback?.PlayFeedbacks();
@@ -47,7 +48,7 @@ public class Emberlight : MonoBehaviour
         }
 
         // Show feedback
-        UIManager.Instance?.ShowMessage($"✦ +{fuelValue} Emberlight");
+        UIManager.Instance?.ShowMessage($"+{emberlightValue} Emberlight!");
 
         // Disable visuals and collider
         _collider.enabled = false;

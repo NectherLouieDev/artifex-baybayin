@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MemoryStone : MonoBehaviour
 {
+    [SerializeField] private EchoComponent echoComponent;
     [SerializeField] private SafeAreaTrigger _safeAreaTrigger;
     [SerializeField] private float activationCost = 5f;
     [SerializeField] private Transform _respawnTranfsorm;
@@ -48,6 +49,8 @@ public class MemoryStone : MonoBehaviour
         }
 
         _safeAreaTrigger.Activate();
+
+        echoComponent.SpawnEcho();
 
         GameManager.Instance.ActivateMemoryStone(_respawnTranfsorm.position, gameObject.name);
         //FogManager.Instance.PushBackFog(transform.position, 20f);

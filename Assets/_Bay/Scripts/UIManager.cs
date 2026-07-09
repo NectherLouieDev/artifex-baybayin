@@ -34,6 +34,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Quest Display")]
     [SerializeField] private GameObject questDisplay;
+    [SerializeField] private TMP_Text questText;
 
     [Header("Interaction")]
     [SerializeField] private TMP_Text interactPromptText;
@@ -66,10 +67,9 @@ public class UIManager : MonoBehaviour
 
     [Header("Inventory")]
     [SerializeField] private GameObject inventoryPanel;
-    [SerializeField] private Image[] itemSlotImages; // 5 slots
+    [SerializeField] private Image[] itemSlotImages;
     [SerializeField] private TMP_Text[] itemSlotCountTexts;
-    [SerializeField] private Image fuelSlotImage;
-    [SerializeField] private TMP_Text fuelSlotCountText;
+    [SerializeField] private TMP_Text emberlightSlotCountText;
 
     [Header("Game Panels")]
     [SerializeField] private GameObject pauseMenuPanel;
@@ -248,6 +248,13 @@ public class UIManager : MonoBehaviour
     public void ShowQuestDisplay()
     {
         questDisplay.SetActive(true);
+        ToggleInventory();
+    }
+
+    public void UpdateQuestText(int memoryStonesActivated, int totalMemoryStones)
+    {
+        string title = "Activate Memory Stones ";
+        questText.text = $"{title} ({memoryStonesActivated}/{totalMemoryStones})";
     }
 
     #endregion
@@ -367,26 +374,33 @@ public class UIManager : MonoBehaviour
 
     #region Inventory UI
 
-    public void UpdateInventoryUI(InventoryItem[] items, int fuelAmount)
+    public void UpdateItemSlotCounter(int slotIndex, int count)
+    {
+        itemSlotCountTexts[slotIndex].gameObject.SetActive(count > 0);
+        itemSlotCountTexts[slotIndex].text = count.ToString("D2");
+    }
+
+    public void UpdateInventoryUI(InventoryItem[] items, int emberlightAmount)
     {
         // Update item slots
         for (int i = 0; i < itemSlotImages.Length; i++)
         {
             if (i < items.Length && items[i] != null)
             {
-                itemSlotImages[i].sprite = items[i].icon;
-                itemSlotImages[i].color = Color.white;
                 itemSlotImages[i].gameObject.SetActive(true);
+                itemSlotImages[i].sprite = items[i].icon;
 
-                if (items[i].isStackable && items[i].currentStack > 1)
-                {
-                    itemSlotCountTexts[i].text = items[i].currentStack.ToString();
-                    itemSlotCountTexts[i].gameObject.SetActive(true);
-                }
-                else
-                {
-                    itemSlotCountTexts[i].gameObject.SetActive(false);
-                }
+                itemSlotImages[i].color = items[i].isActive ? Color.white : Color.darkBlue;
+
+                //if (items[i].isStackable && items[i].currentStack > 1)
+                //{
+                //    itemSlotCountTexts[i].text = items[i].currentStack.ToString();
+                //    itemSlotCountTexts[i].gameObject.SetActive(true);
+                //}
+                //else
+                //{
+                //    itemSlotCountTexts[i].gameObject.SetActive(false);
+                //}
             }
             else
             {
@@ -396,17 +410,15 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        // Update fuel slot
-        if (fuelAmount > 0)
+        // Update emberlight slot
+        if (emberlightAmount > 0)
         {
-            fuelSlotImage.color = Color.white;
-            fuelSlotCountText.text = fuelAmount.ToString();
-            fuelSlotCountText.gameObject.SetActive(true);
+            emberlightSlotCountText.text = emberlightAmount.ToString("D2");
+            emberlightSlotCountText.gameObject.SetActive(true);
         }
         else
         {
-            fuelSlotImage.color = new Color(0, 0, 0, 0);
-            fuelSlotCountText.gameObject.SetActive(false);
+            emberlightSlotCountText.gameObject.SetActive(false);
         }
     }
 
