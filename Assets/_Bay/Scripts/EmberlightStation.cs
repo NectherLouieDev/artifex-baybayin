@@ -78,8 +78,8 @@ public class EmberlightStation : MonoBehaviour
         if (spawnCount >= maxEmberlights)
         {
             // Stop spawning if we've reached max
-            if (spawnTimer.IsRunning())
-                spawnTimer.StopTimer();
+            //if (spawnTimer.IsRunning())
+            //    spawnTimer.StopTimer();
             return;
         }
 
@@ -171,20 +171,20 @@ public class EmberlightStation : MonoBehaviour
         {
             SpawnEmberlight();
         }
-        else if (spawnCount >= maxEmberlights)
-        {
-            // Stop timer if we've reached max
-            spawnTimer.StopTimer();
-        }
+        //else if (spawnCount >= maxEmberlights)
+        //{
+        //    // Stop timer if we've reached max
+        //    spawnTimer.StopTimer();
+        //}
     }
 
     void OnSpawnTimerCompleted(object sender, GGTimer timer)
     {
         // This shouldn't happen with infinite loops, but just in case
-        if (spawnCount < maxEmberlights)
-        {
-            SpawnEmberlight();
-        }
+        //if (spawnCount < maxEmberlights)
+        //{
+        //    SpawnEmberlight();
+        //}
     }
 
     #endregion

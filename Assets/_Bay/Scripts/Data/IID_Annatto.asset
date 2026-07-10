@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 660788dfc1769264296c17a96f52bbd4, type: 3}
+  m_Name: IID_Annatto
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryItemData
+  itemName: Annatto Seed
+  culturalOrigin: 'Tau SOX Communities
+
+    Region 12'
+  description: A small clay jar filled with rich, orange-red oil extracted from annatto
+    seeds. Used by indigenous communities for textile dyeing, body paint, and traditional
+    crafts.
+  effectDescription: Applied to the lantern's wick, refilling it fully.
+  icon: {fileID: 21300000, guid: 456c11043027707499efbaf523aa8c76, type: 3}
+  effectType: 3
+  isStackable: 0
+  cooldown: 0
+  isActive: 0

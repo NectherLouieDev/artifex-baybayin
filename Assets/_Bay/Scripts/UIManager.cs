@@ -7,6 +7,10 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("Input")]
+    [SerializeField] private InputAction _portalInputAction;
+    [SerializeField] private InputAction _backInputAction;
+
     [Header("Main UI References")]
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private TMP_Text messageText;
@@ -48,6 +52,16 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text discoveryHistoricalFact;
     [SerializeField] private Button discoveryPortalButton;
     [SerializeField] private Button discoveryContinueButton;
+
+    [Header("Item Screen")]
+    [SerializeField] private GameObject itemScreenPanel;
+    [SerializeField] private TMP_Text itemName;
+    [SerializeField] private TMP_Text itemDiscoverdName;
+    [SerializeField] private Image itemImage;
+    [SerializeField] private TMP_Text itemCulturalText;
+    [SerializeField] private TMP_Text itemDetailText;
+    [SerializeField] private TMP_Text itemEffectText;
+    [SerializeField] private Button itemPortalButton;
 
     [Header("Portal Notification")]
     [SerializeField] private GameObject portalNotificationPanel;
@@ -102,6 +116,7 @@ public class UIManager : MonoBehaviour
         victoryPanel.SetActive(false);
         gameOverPanel.SetActive(false);
         discoveryScreenPanel.SetActive(false);
+        itemScreenPanel.SetActive(false);
         portalNotificationPanel.SetActive(false);
         tooltipPanel.SetActive(false);
         inventoryPanel.SetActive(false);
@@ -121,6 +136,30 @@ public class UIManager : MonoBehaviour
 
         if (tooltipDropButton != null)
             tooltipDropButton.onClick.AddListener(OnTooltipDropPressed);
+
+        // Item screen
+        _portalInputAction.performed -= PortalInputAction_performed;
+        _backInputAction.performed -= BackInputAction_performed;
+
+        _portalInputAction.performed += PortalInputAction_performed;
+        _backInputAction.performed += BackInputAction_performed;
+    }
+
+    private void OnDisable()
+    {
+        _portalInputAction.performed -= PortalInputAction_performed;
+        _backInputAction.performed -= BackInputAction_performed;
+    }
+
+    private void BackInputAction_performed(InputAction.CallbackContext obj)
+    {
+        // Close Item Popup
+        OnItemContinueButtonPressed();
+    }
+
+    private void PortalInputAction_performed(InputAction.CallbackContext obj)
+    {
+        ShowMessage("Opening Portal Site");
     }
 
     void Update()
@@ -158,7 +197,7 @@ public class UIManager : MonoBehaviour
     IEnumerator DisplayMessage(string message)
     {
         messagePanel.SetActive(true);
-        messageText.text = message;
+        messageText.text = "<wiggle>" + message;
 
         yield return new WaitForSeconds(messageDisplayTime);
 
@@ -289,7 +328,6 @@ public class UIManager : MonoBehaviour
             discoveryHistoricalFact.text = historicalFact;
 
         // Show cursor
-        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         // Pause game
@@ -315,11 +353,46 @@ public class UIManager : MonoBehaviour
 
         // Resume game
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         // Show completion message
-        ShowMessage("You have recovered the Baybayin Stone!\nThe legacy of Tawalisi lives on.");
+        ShowMessage("You have recovered the Baybayin Stone!");
+    }
+
+    public void ShowItemScreen(InventoryItem item)
+    {
+        itemScreenPanel.SetActive(true);
+
+        _portalInputAction.Enable();
+        _backInputAction.Enable();
+
+        itemName.text = item.itemName;
+        itemDiscoverdName.text = item.itemName;
+        itemImage.sprite = item.icon;
+        itemCulturalText.text = item.culturalOrigin;
+        itemDetailText.text = item.description;
+        itemEffectText.text = item.effectDescription;
+
+        // Show cursor
+        Cursor.visible = true;
+
+        // Pause game
+        Time.timeScale = 0f;
+    }
+
+    void OnItemContinueButtonPressed()
+    {
+        _portalInputAction.Disable();
+        _backInputAction.Disable();
+
+        itemScreenPanel.SetActive(false);
+
+        // Resume game
+        Time.timeScale = 1f;
+        Cursor.visible = false;
+
+        // Show completion message
+        //ShowMessage("You have recovered the Baybayin Stone!\nThe legacy of Tawalisi lives on.");
     }
 
     #endregion
@@ -390,7 +463,7 @@ public class UIManager : MonoBehaviour
                 itemSlotImages[i].gameObject.SetActive(true);
                 itemSlotImages[i].sprite = items[i].icon;
 
-                itemSlotImages[i].color = items[i].isActive ? Color.white : Color.darkBlue;
+                itemSlotImages[i].color = items[i].isActive ? Color.white : Color.darkKhaki;
 
                 //if (items[i].isStackable && items[i].currentStack > 1)
                 //{
@@ -480,13 +553,11 @@ public class UIManager : MonoBehaviour
         if (!isPaused)
         {
             Time.timeScale = 0f;
-            Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
         else
         {
             Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
     }
@@ -495,7 +566,6 @@ public class UIManager : MonoBehaviour
     {
         pauseMenuPanel.SetActive(false);
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 

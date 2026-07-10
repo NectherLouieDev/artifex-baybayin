@@ -30,6 +30,7 @@ public class LanternManager : MonoBehaviour
     private float temporaryRangeBoost = 1f;
     private float effectTimer = 0f;
     private bool isEffectActive = false;
+    private EchoComponent _playerEchoComponent;
 
     [Header("Audio")]
     [SerializeField] private AudioSource lanternAudio;
@@ -288,6 +289,8 @@ public class LanternManager : MonoBehaviour
 
     public void ApplyRangeBoost(float boostMultiplier, float duration)
     {
+        _playerEchoComponent.ForceSpawnEcho();
+
         temporaryRangeBoost = boostMultiplier;
         effectTimer = duration;
         isEffectActive = true;
@@ -309,23 +312,12 @@ public class LanternManager : MonoBehaviour
     {
         isInSafeZone = true;
 
-        // Visual feedback
-        if (lanternParticles != null)
-        {
-            lanternParticles.startColor = new Color(1f, 0.8f, 0.4f);
-        }
-
         UIManager.Instance.ShowMessage("Entered Safe Zone!");
     }
 
     public void ExitSafeZone()
     {
         isInSafeZone = false;
-
-        if (lanternParticles != null)
-        {
-            lanternParticles.startColor = new Color(1f, 0.6f, 0.2f);
-        }
 
         UIManager.Instance.ShowMessage("Exited Safe Zone!");
     }

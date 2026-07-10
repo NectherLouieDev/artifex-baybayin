@@ -9924,8 +9924,8 @@ MonoBehaviour:
   stationName: Emberlight Station
   maxEmberlights: 2
   spawnRadius: 8
-  spawnIntervalMin: 8
-  spawnIntervalMax: 16
+  spawnIntervalMin: 16
+  spawnIntervalMax: 32
   spawnForce: 8
   emberlightPrefab: {fileID: 6370477743709815354, guid: 82601716d5ba1ac41ae012919462661c, type: 3}
   spawnParent: {fileID: 7978628164525103058}

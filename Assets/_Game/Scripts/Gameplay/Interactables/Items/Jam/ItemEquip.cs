@@ -1,4 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
+
 
 public class ItemEquip : InteractableObject, ICarryable
 {
@@ -6,7 +8,7 @@ public class ItemEquip : InteractableObject, ICarryable
     [SerializeField] private bool _interactable = false;
 
     [Header("Inventory Item Data")]
-    [SerializeField] private InventoryItem _inventoryItem;
+    [SerializeField] private InventoryItemData _inventoryItemData;
 
     private SphereCollider _sphereCollider;
     private Rigidbody _rb;
@@ -16,6 +18,7 @@ public class ItemEquip : InteractableObject, ICarryable
     public GameData_ItemConfig ItemConfig {  get { return _itemConfig; } }
 
     private bool isPlayer = false;
+    private ItemCarrierComponent _playerCarrier;
 
     protected virtual void Awake()
     {
@@ -33,9 +36,15 @@ public class ItemEquip : InteractableObject, ICarryable
         if (interactor.TryGetComponent(out ItemCarrierComponent itemCarrierComponent))
         {
             if (interactor.TryGetComponent(out PlayerIdentity identity))
+            {
                 isPlayer = true;
+                _playerCarrier = itemCarrierComponent;
+            }
             else
+            {
                 isPlayer = false;
+                _playerCarrier = null;
+            }
 
             // drop carried item first
             if (itemCarrierComponent.IsCarrying)
@@ -64,11 +73,13 @@ public class ItemEquip : InteractableObject, ICarryable
 
         if (isPlayer)
         {
-            UIManager.Instance.ShowMessage($"You Found {_inventoryItem.itemName}");
+            InventoryItem item = new InventoryItem(_inventoryItemData);
 
-            InventoryManager.Instance.AddItem(_inventoryItem);
+            InventoryManager.Instance.AddItem(item);
 
-            Despawn();
+            UIManager.Instance.ShowItemScreen(item);
+
+            _playerCarrier.DespawnItem();
         }
 
     }

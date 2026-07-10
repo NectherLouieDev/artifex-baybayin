@@ -224,7 +224,6 @@ public class InventoryManager : MonoBehaviour
         UpdateUI();
         CloseTooltip();
 
-        UIManager.Instance.ShowMessage("Used: " + item.itemName);
         return true;
     }
 
@@ -324,21 +323,21 @@ public class InventoryManager : MonoBehaviour
         {
             case ItemEffectType.TnalakDecayReduction:
                 // Tnalak Cloth - 30% decay reduction for 30 seconds
-                LanternManager.Instance.ApplyDecayReduction(0.7f, 30f);
-                UIManager.Instance.ShowMessage("Tnalak Cloth: Lantern decay reduced by 30% for 30s!");
+                LanternManager.Instance.ApplyDecayReduction(0.1f, 30f);
+                UIManager.Instance.ShowMessage("Lantern decay reduced by 90%!");
                 break;
 
             case ItemEffectType.KulintangEcho:
                 // Kulintang Gong Essence - 50% range boost for 20 seconds
                 // Enable Echo Component
                 LanternManager.Instance.ApplyRangeBoost(1.5f, 20f);
-                UIManager.Instance.ShowMessage("Kulintang Gong: Lantern range boosted for 20s!");
+                UIManager.Instance.ShowMessage("Lantern range boosted!");
                 break;
 
             case ItemEffectType.AnnattoRefill:
                 // Annatto Seed Oil - Refills fuel
                 LanternManager.Instance.RespawnFuel();
-                UIManager.Instance.ShowMessage("Annatto Oil: +10 Emberlight!");
+                UIManager.Instance.ShowMessage("Fuel refilled!");
                 break;
 
             case ItemEffectType.KawayanTorch:
@@ -525,20 +524,6 @@ public class InventoryItem
         cooldown = other.cooldown;
         isActive = other.isActive;
     }
-}
-
-[System.Serializable]
-public class InventoryItemData : ScriptableObject
-{
-    public string itemName;
-    public string culturalOrigin;
-    public string description;
-    public string effectDescription;
-    public Sprite icon;
-    public ItemEffectType effectType;
-    public bool isStackable;
-    public float cooldown;
-    public bool isActive;
 }
 
 public enum ItemEffectType

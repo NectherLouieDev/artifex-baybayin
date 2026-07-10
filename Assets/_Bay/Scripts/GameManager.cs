@@ -493,7 +493,7 @@ public class GameManager : MonoBehaviour
         if (showDebugLogs)
             Debug.Log("All Memory Stones activated!");
 
-        UIManager.Instance?.ShowMessage("All Memory Stones activated! The path to the artifact is revealed.");
+        UIManager.Instance.ShowMessage("All Memory Stones activated! The path to the artifact is revealed.");
 
         // Reveal artifact location
         artifactSpawner.RevealStone();
@@ -560,7 +560,6 @@ public class GameManager : MonoBehaviour
     {
         isGamePaused = true;
         Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
@@ -568,7 +567,6 @@ public class GameManager : MonoBehaviour
     {
         isGamePaused = false;
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 

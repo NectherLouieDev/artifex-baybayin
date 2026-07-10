@@ -11,6 +11,8 @@ public class TnalakChestStation : InteractableObject
     [SerializeField] private MMFeedbacks _spawnFeedbacks;
     [SerializeField] private Transform _chestLid;
     [SerializeField] private GameObject _icon;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private GameObject _particleObject;
 
     private bool _isOpening = false;
     private GameData_Recipe _currentRecipe;
@@ -53,8 +55,8 @@ public class TnalakChestStation : InteractableObject
                 if (!actorCarrierComponent.CarriedItem.GetItemConfig().isTnalak)
                 {
                     actorCarrierComponent.DropItem();
-                    Debug.Log("Item cannot open T'nalak Chest!");
-                    UIManager.Instance.ShowQuickMessage("Item cannot open T'nalak Chest!");
+                    Debug.Log("Item cannot open Chest!");
+                    UIManager.Instance.ShowQuickMessage("Item cannot open Chest!");
                     return;
                 }
 
@@ -138,6 +140,10 @@ public class TnalakChestStation : InteractableObject
 
         _icon.SetActive(false);
 
+        _audioSource.Stop();
+
+        _particleObject.SetActive(false);
+
         SpawnOutput();
 
         _isOpening = false;
@@ -159,7 +165,7 @@ public class TnalakChestStation : InteractableObject
             GameObject itemAssembledG = Instantiate(_currentRecipe.outputPrefab, transform.position + Vector3.up, Quaternion.identity);
             ICarryable itemAssembled = itemAssembledG.GetComponent<ICarryable>();
 
-            //_carrierComponent.PickupItem(itemAssembled);
+            _carrierComponent.PickupItem(itemAssembled);
             _carrierComponent.DropItem();
 
             GameplayEventBus.Instance.Invoke(new GameplayEvents.AssemblySpawnedItem

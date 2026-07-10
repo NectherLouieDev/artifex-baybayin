@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 660788dfc1769264296c17a96f52bbd4, type: 3}
+  m_Name: IID_Tnalak
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryItemData
+  itemName: T'nalak Cloth
+  culturalOrigin: 'Tboli People
+
+    South Cotabato'
+  description: A fragment of the iconic Tboli textile with intricate red, black,
+    and white geometric patterns. Woven from abaca fibers and inspired by dreams,
+    this cloth carries the spirit of the Tboli weavers.
+  effectDescription: Wrapping this cloth around your lantern shields the light that
+    prevents lantern decay.
+  icon: {fileID: 21300000, guid: 3f67c05bed276754cad812fa9d682398, type: 3}
+  effectType: 1
+  isStackable: 0
+  cooldown: 0
+  isActive: 0

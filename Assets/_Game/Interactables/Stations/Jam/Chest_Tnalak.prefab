@@ -1406,6 +1406,16 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3362028644146292668, guid: b76de5f1703f89b4c94889eaf8061705, type: 3}
   m_PrefabInstance: {fileID: 511216111163264898}
   m_PrefabAsset: {fileID: 0}
+--- !u!82 &3207818543983924725 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 3142458797180934775, guid: b76de5f1703f89b4c94889eaf8061705, type: 3}
+  m_PrefabInstance: {fileID: 511216111163264898}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4225656576690567151 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4448632965172885613, guid: b76de5f1703f89b4c94889eaf8061705, type: 3}
+  m_PrefabInstance: {fileID: 511216111163264898}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6844550218692663103 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6477458779060852925, guid: b76de5f1703f89b4c94889eaf8061705, type: 3}
@@ -1430,6 +1440,8 @@ MonoBehaviour:
   _spawnFeedbacks: {fileID: 3648618013642719428}
   _chestLid: {fileID: 1330776763239615526}
   _icon: {fileID: 4700817323894589108}
+  _audioSource: {fileID: 3207818543983924725}
+  _particleObject: {fileID: 4225656576690567151}
 --- !u!4 &7280801304587812133 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7066902553396507303, guid: b76de5f1703f89b4c94889eaf8061705, type: 3}

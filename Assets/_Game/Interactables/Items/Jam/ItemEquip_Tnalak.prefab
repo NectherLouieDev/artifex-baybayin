@@ -260,6 +260,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3657504735466308327, guid: 47f85e2485de4e34aad5ddc7db52acce, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
     - target: {fileID: 3844637479965673450, guid: 47f85e2485de4e34aad5ddc7db52acce, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -308,6 +312,10 @@ PrefabInstance:
       propertyPath: _interactable
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4619735157099819820, guid: 47f85e2485de4e34aad5ddc7db52acce, type: 3}
+      propertyPath: _inventoryItemData
+      value: 
+      objectReference: {fileID: 11400000, guid: 85ef3de265570d949ae691f2a694213d, type: 2}
     - target: {fileID: 4619735157099819820, guid: 47f85e2485de4e34aad5ddc7db52acce, type: 3}
       propertyPath: _inventoryItem.icon
       value: 

@@ -39,7 +39,11 @@ public enum ERecipeInputType
     Key_Kulintang,
     Key_Annatto,
 
-    Equip_Tnalak
+    Equip_Tnalak,
+    Equip_Inaul,
+    Equip_Kawayan,
+    Equip_Kulintang,
+    Equip_Annatto,
 }
 
 public enum ERecipeOutputType
