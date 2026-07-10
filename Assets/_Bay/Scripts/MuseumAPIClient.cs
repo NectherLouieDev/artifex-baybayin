@@ -346,7 +346,7 @@ public class MuseumAPIClient : MonoBehaviour
         OnArtifactSaved?.Invoke(response);
 
         // Show portal notification
-        UIManager.Instance.ShowPortalNotification("✅ Artifact Saved to Digital Museum!");
+        UIManager.Instance.ShowMessage("✅ Artifact Saved to Digital Museum!");
 
         // Reveal historical fact
         OnHistoricalFactRevealed?.Invoke(data.historicalFact);
@@ -378,7 +378,7 @@ public class MuseumAPIClient : MonoBehaviour
                 {
                     Debug.Log($"✓ Artifact saved to Digital Museum!");
                     OnArtifactSaved?.Invoke(response);
-                    UIManager.Instance.ShowPortalNotification("✅ Artifact Saved to Digital Museum!");
+                    UIManager.Instance.ShowMessage("✅ Artifact Saved to Digital Museum!");
 
                     // Reveal historical fact
                     OnHistoricalFactRevealed?.Invoke(data.historicalFact);

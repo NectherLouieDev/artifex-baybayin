@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -8,15 +9,20 @@ public class LoadingHandler : MonoBehaviour
     [SerializeField] private SceneLoader _sceneLoader;
     [SerializeField] private GameObject _questContinue;
     [SerializeField] private GameObject _questPanel;
+    [SerializeField] private CanvasGroup _questPanelCanvas;
     [SerializeField] private GameObject _loadingPanel;
     [SerializeField] private Slider _progressSlider;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip bookClip;
 
     private GGTimer _delayTimer;
     private GGTimer _loadingTimer;
 
     private void Start()
     {
-        _questPanel.SetActive(true);
+        _questPanel.SetActive(false);
         _loadingPanel.SetActive(false);
         _questContinue.SetActive(false);
 
@@ -28,10 +34,21 @@ public class LoadingHandler : MonoBehaviour
         _continueInputAction.performed += ContinueInputAction_performed;
         //_continueInputAction.Enable();
 
+        _questPanelCanvas.alpha = 0;
+        _questPanelCanvas.DOFade(1, 0.25f)
+            .OnStart(() => {
+                sfxSource.PlayOneShot(bookClip);
+                _questPanel.SetActive(true);
+            })
+            .OnComplete(() => {
+                _questPanelCanvas.alpha = 1;
+                _questPanel.SetActive(true);
+            });
+
         _delayTimer = gameObject.AddComponent<GGTimer>();
         _delayTimer.timerId = "Delay Timer";
         _delayTimer.OnTimerCompleted += DelayTimer_OnTimerCompleted;
-        _delayTimer.StartTimer(3, 1);
+        _delayTimer.StartTimer(3.5f, 1);
     }
 
     private void DelayTimer_OnTimerCompleted(object sender, GGTimer e)
@@ -46,10 +63,20 @@ public class LoadingHandler : MonoBehaviour
         _continueInputAction.performed -= ContinueInputAction_performed;
         _continueInputAction.Disable();
 
-        _questPanel.SetActive(false);
+        _questPanelCanvas.alpha = 1;
+        _questPanelCanvas.DOFade(0, 0.25f)
+            .OnStart(() => {
+                sfxSource.PlayOneShot(bookClip);
+                _questPanel.SetActive(true);
+            })
+            .OnComplete(() => {
+                _questPanelCanvas.alpha = 0;
+                _questPanel.SetActive(false);
+            });
+
         _loadingPanel.SetActive(true);
 
-        float loadTime = Random.Range(5, 10);
+        float loadTime = Random.Range(6, 12);
 
         _loadingTimer.StartTimer(loadTime, 1);
     }

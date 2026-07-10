@@ -6,6 +6,7 @@ using Unity.Multiplayer.PlayMode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using PixeLadder.EasyTransition;
 
 // Enums
 public enum GameState
@@ -67,6 +68,7 @@ public class GameManager : MonoBehaviour
     [Header("Artifact")]
     [SerializeField] private ArtifactSpawner artifactSpawner;
     [SerializeField] private bool artifactDiscovered = false;
+    [SerializeField] private TransitionEffect spawnTransitionEffect;
 
     [Header("Fog System Reference")]
     [SerializeField] private FogManager fogManager;
@@ -114,6 +116,7 @@ public class GameManager : MonoBehaviour
     private GGTimer respawnTimer;
     private GGTimer victoryTimer;
     private GGTimer spawnDelayTimer;
+    private GGTimer spawnTransitionTimer;
     private GGTimer artifactSequenceTimer;
 
     void Awake()
@@ -147,6 +150,10 @@ public class GameManager : MonoBehaviour
         spawnDelayTimer.timerId = "Spawn Delayer";
         spawnDelayTimer.OnTimerCompleted += SpawnDelayTimer_OnTimerCompleted;
 
+        spawnTransitionTimer = gameObject.AddComponent<GGTimer>();
+        spawnTransitionTimer.timerId = "Spawn Transition Timer";
+        spawnTransitionTimer.OnTimerCompleted += SpawnTransitionTimer_OnTimerCompleted;
+
         artifactSequenceTimer = gameObject.AddComponent<GGTimer>();
         artifactSequenceTimer.timerId = "ArtifactSequenceTimer";
         artifactSequenceTimer.OnTimerCompleted += ArtifactSequenceTimer_OnTimerCompleted;
@@ -166,11 +173,18 @@ public class GameManager : MonoBehaviour
         spawnDelayTimer.StartTimer(0.1f, 1);
     }
 
+    private void SpawnTransitionTimer_OnTimerCompleted(object sender, GGTimer e)
+    {
+        SceneTransitioner.Instance.PlayTransition(null, spawnTransitionEffect);
+    }
+
     private void SpawnDelayTimer_OnTimerCompleted(object sender, GGTimer e)
     {
         artifactSpawner.SpawnArtifact();
 
-        artifactSequenceTimer.StartTimer(6, 1);
+        artifactSequenceTimer.StartTimer(7, 1);
+
+        spawnTransitionTimer.StartTimer(5.75f, 1);
     }
 
     private void ArtifactSequenceTimer_OnTimerCompleted(object sender, GGTimer e)
@@ -229,6 +243,18 @@ public class GameManager : MonoBehaviour
         }
 
         UIManager.Instance.TogglePauseMenu();
+    }
+
+    public void EnablePauseInputAction()
+    {
+        _pauseInputAction.performed += PauseInputAction_performed;
+        _pauseInputAction.Enable();
+    }
+
+    public void DisablePauseInputAction()
+    {
+        _pauseInputAction.performed -= PauseInputAction_performed;
+        _pauseInputAction.Disable();
     }
 
     void Update()

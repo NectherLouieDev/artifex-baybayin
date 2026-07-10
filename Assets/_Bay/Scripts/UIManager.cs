@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -51,6 +52,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Discovery Screen")]
     [SerializeField] private GameObject discoveryScreenPanel;
+    [SerializeField] private CanvasGroup discoveryScreenCanvas;
     [SerializeField] private TMP_Text discoveryArtifactName;
     [SerializeField] private Image discoveryArtifactImage;
     [SerializeField] private TMP_Text discoveryLoreText;
@@ -58,6 +60,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Item Screen")]
     [SerializeField] private GameObject itemScreenPanel;
+    [SerializeField] private CanvasGroup itemScreenCanvas;
     [SerializeField] private TMP_Text itemName;
     [SerializeField] private TMP_Text itemDiscoverdName;
     [SerializeField] private Image itemImage;
@@ -171,6 +174,10 @@ public class UIManager : MonoBehaviour
 
     private void MainmenuInputAction_performed(InputAction.CallbackContext obj)
     {
+        // Resume game
+        Time.timeScale = 1f;
+        Cursor.visible = false;
+
         _discoverPortalInputAction.Disable();
         _mainmenuInputAction.Disable();
 
@@ -339,10 +346,23 @@ public class UIManager : MonoBehaviour
     {
         MuseumAPIClient.Instance.SaveArtifact();
 
-        discoveryScreenPanel.SetActive(true);
+        discoveryScreenCanvas.alpha = 0;
+        discoveryScreenCanvas.DOFade(1, 0.25f)
+            .OnStart(() => {
+                discoveryScreenPanel.SetActive(true);
+            })
+            .OnComplete(() => {
+                discoveryScreenCanvas.alpha = 1;
+                discoveryScreenPanel.SetActive(true);
+
+                Cursor.visible = true;
+                Time.timeScale = 0f;
+            });
 
         _discoverPortalInputAction.Enable();
         _mainmenuInputAction.Enable();
+
+        GameManager.Instance.DisablePauseInputAction();
 
         if (discoveryArtifactName != null)
             discoveryArtifactName.text = artifactName;
@@ -355,20 +375,27 @@ public class UIManager : MonoBehaviour
 
         if (discoveryHistoricalFact != null)
             discoveryHistoricalFact.text = historicalFact;
-
-        // Show cursor
-        Cursor.visible = true;
-
-        // Pause game
-        Time.timeScale = 0f;
     }
 
     public void ShowItemScreen(InventoryItem item)
     {
-        itemScreenPanel.SetActive(true);
+        itemScreenCanvas.alpha = 0;
+        itemScreenCanvas.DOFade(1, 0.25f)
+            .OnStart(() => { 
+                itemScreenPanel.SetActive(true);
+            })
+            .OnComplete(() => {
+                itemScreenCanvas.alpha = 1;
+                itemScreenPanel.SetActive(true);
+
+                Cursor.visible = true;
+                Time.timeScale = 0f;
+            });
 
         _portalInputAction.Enable();
         _backInputAction.Enable();
+
+        GameManager.Instance.DisablePauseInputAction();
 
         itemName.text = item.itemName;
         itemDiscoverdName.text = item.itemName;
@@ -376,12 +403,6 @@ public class UIManager : MonoBehaviour
         itemCulturalText.text = item.culturalOrigin;
         itemDetailText.text = item.description;
         itemEffectText.text = item.effectDescription;
-
-        // Show cursor
-        Cursor.visible = true;
-
-        // Pause game
-        Time.timeScale = 0f;
     }
 
     public void CloseItemScreen()
@@ -389,14 +410,21 @@ public class UIManager : MonoBehaviour
         _portalInputAction.Disable();
         _backInputAction.Disable();
 
-        itemScreenPanel.SetActive(false);
-
         // Resume game
         Time.timeScale = 1f;
         Cursor.visible = false;
 
-        // Show completion message
-        //ShowMessage("You have recovered the Baybayin Stone!\nThe legacy of Tawalisi lives on.");
+        itemScreenCanvas.alpha = 1;
+        itemScreenCanvas.DOFade(0, 0.25f)
+            .OnStart(() => {
+                itemScreenPanel.SetActive(true);
+            })
+            .OnComplete(() => {
+                itemScreenCanvas.alpha = 0;
+                itemScreenPanel.SetActive(false);
+            });
+
+        GameManager.Instance.EnablePauseInputAction();
     }
 
     #endregion
