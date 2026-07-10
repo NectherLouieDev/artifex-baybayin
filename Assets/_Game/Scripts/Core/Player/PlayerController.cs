@@ -77,7 +77,9 @@ public class PlayerController : MonoBehaviour
             return;
 
         //UpdateMovement();
-        UpdateMovementThirdPerson();
+        //UpdateMovementThirdPerson();
+        //UpdateMovementThirdPerson02();
+        UpdateMovementThirdPerson03();
     }
 
     private void UpdateMovement()
@@ -225,10 +227,199 @@ public class PlayerController : MonoBehaviour
         //}
     }
 
+    private void UpdateMovementThirdPerson02()
+    {
+        Transform cameraTransform = Camera.main.transform;
+        Vector3 cameraForward = cameraTransform.forward;
+        Vector3 cameraRight = cameraTransform.right;
+
+        cameraForward.y = 0;
+        cameraForward.Normalize();
+        cameraRight.y = 0;
+        cameraRight.Normalize();
+
+        Vector2 inputVector = _inputVector;
+
+        // Calculate movement direction relative to camera
+        Vector3 moveDirection = (cameraForward * inputVector.y + cameraRight * inputVector.x);
+
+        // Only normalize if magnitude is significant
+        if (moveDirection.sqrMagnitude > 0.01f)
+        {
+            moveDirection.Normalize();
+        }
+        else
+        {
+            moveDirection = Vector3.zero;
+        }
+
+        float moveDistance = _moveSpeed * Time.deltaTime;
+        bool canMove = true;
+
+        // Only check collision if we're actually trying to move
+        if (moveDirection != Vector3.zero)
+        {
+            canMove = !TryCapsuleCast(moveDirection, moveDistance);
+
+            if (!canMove)
+            {
+                // Try moving only on X axis
+                Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
+
+                // Normalize move direction
+                if (moveDirectionX.sqrMagnitude > 0.01f)
+                {
+                    moveDirectionX.Normalize();
+                }
+                else
+                {
+                    moveDirectionX = Vector3.zero;
+                }
+
+                canMove = Mathf.Abs(moveDirection.x) > 0.01f && !TryCapsuleCast(moveDirectionX, moveDistance);
+
+                if (canMove)
+                {
+                    moveDirection = moveDirectionX;
+                }
+                else
+                {
+                    // Try moving only on Z axis
+                    Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
+
+                    if (moveDirectionZ.sqrMagnitude > 0.01f)
+                    {
+                        moveDirectionZ.Normalize();
+                    }
+                    else
+                    {
+                        moveDirectionZ = Vector3.zero;
+                    }
+
+                    canMove = Mathf.Abs(moveDirection.z) > 0.01f && !TryCapsuleCast(moveDirectionZ, moveDistance);
+
+                    if (canMove)
+                    {
+                        moveDirection = moveDirectionZ;
+                    }
+                    else
+                    {
+                        // Can't move in any direction
+                        moveDirection = Vector3.zero;
+                    }
+                }
+            }
+        }
+
+        // Apply movement
+        if (canMove && moveDirection != Vector3.zero)
+        {
+            transform.position += moveDirection * moveDistance;
+        }
+
+        _isMoving = moveDirection != Vector3.zero;
+
+        // Rotate player to face movement direction
+        if (_isMoving)
+        {
+            // Use the actual movement direction, not the input direction
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotateSpeed);
+        }
+    }
+
+    private void UpdateMovementThirdPerson03()
+    {
+        Transform cameraTransform = Camera.main.transform;
+        Vector3 cameraForward = cameraTransform.forward;
+        Vector3 cameraRight = cameraTransform.right;
+
+        cameraForward.y = 0;
+        cameraForward.Normalize();
+        cameraRight.y = 0;
+        cameraRight.Normalize();
+
+        Vector2 inputVector = _inputVector;
+
+        // Calculate movement direction
+        Vector3 moveDirection = (cameraForward * inputVector.y + cameraRight * inputVector.x);
+
+        if (moveDirection.sqrMagnitude > 0.1f)
+        {
+            moveDirection.Normalize();
+        }
+        else
+        {
+            moveDirection = Vector3.zero;
+        }
+
+        float moveDistance = _moveSpeed * Time.deltaTime;
+        bool canMove = true;
+
+        if (moveDirection != Vector3.zero)
+        {
+            // Cast from current position, not from the front of the capsule
+            Vector3 capsuleStart = transform.position + Vector3.up * _playerRadius;
+            Vector3 capsuleEnd = transform.position + Vector3.up * (_playerHeight - _playerRadius);
+
+            canMove = !Physics.CapsuleCast(capsuleStart, capsuleEnd, _playerRadius, moveDirection, moveDistance, _excudeLayerMasks);
+
+            if (!canMove)
+            {
+                // Try X axis
+                Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0);
+                if (moveDirectionX.sqrMagnitude > 0.1f)
+                {
+                    moveDirectionX.Normalize();
+                    canMove = !Physics.CapsuleCast(capsuleStart, capsuleEnd, _playerRadius, moveDirectionX, moveDistance, _excudeLayerMasks);
+                    if (canMove) moveDirection = moveDirectionX;
+                }
+
+                if (!canMove)
+                {
+                    // Try Z axis
+                    Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z);
+                    if (moveDirectionZ.sqrMagnitude > 0.1f)
+                    {
+                        moveDirectionZ.Normalize();
+                        canMove = !Physics.CapsuleCast(capsuleStart, capsuleEnd, _playerRadius, moveDirectionZ, moveDistance, _excudeLayerMasks);
+                        if (canMove) moveDirection = moveDirectionZ;
+                    }
+                }
+            }
+        }
+
+        if (canMove && moveDirection != Vector3.zero)
+        {
+            transform.position += moveDirection * moveDistance;
+            //// Use MovePosition if using Rigidbody, or direct transform position if not
+            //if (_rb != null && !_rb.isKinematic)
+            //{
+            //    _rb.MovePosition(transform.position + moveDirection * moveDistance);
+            //}
+            //else
+            //{
+            //    transform.position += moveDirection * moveDistance;
+            //}
+        }
+
+        _isMoving = moveDirection != Vector3.zero;
+
+        if (_isMoving)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotateSpeed);
+        }
+    }
+
     private bool TryCapsuleCast(Vector3 direction, float distance)
     {
-        Vector3 p1 = transform.position;
-        Vector3 p2 = transform.position + Vector3.up * _playerHeight;
+        // Only cast if direction is valid
+        if (direction == Vector3.zero || distance <= 0)
+            return false;
+
+        Vector3 p1 = transform.position + Vector3.up * _playerRadius;
+        Vector3 p2 = transform.position + Vector3.up * (_playerHeight - _playerRadius);
 
         return Physics.CapsuleCast(p1, p2, _playerRadius, direction, distance, _excudeLayerMasks);
     }

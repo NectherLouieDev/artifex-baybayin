@@ -23,5 +23,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 456c11043027707499efbaf523aa8c76, type: 3}
   effectType: 3
   isStackable: 0
-  cooldown: 0
+  cooldown: 480
   isActive: 0

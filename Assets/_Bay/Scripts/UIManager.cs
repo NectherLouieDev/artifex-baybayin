@@ -7,9 +7,14 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Input")]
+    [Header("Item Input")]
     [SerializeField] private InputAction _portalInputAction;
     [SerializeField] private InputAction _backInputAction;
+
+    [Header("Hidden Discovery Input")]
+    [SerializeField] private SceneLoader _sceneLoader;
+    [SerializeField] private InputAction _discoverPortalInputAction;
+    [SerializeField] private InputAction _mainmenuInputAction;
 
     [Header("Main UI References")]
     [SerializeField] private GameObject hudPanel;
@@ -50,8 +55,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image discoveryArtifactImage;
     [SerializeField] private TMP_Text discoveryLoreText;
     [SerializeField] private TMP_Text discoveryHistoricalFact;
-    [SerializeField] private Button discoveryPortalButton;
-    [SerializeField] private Button discoveryContinueButton;
 
     [Header("Item Screen")]
     [SerializeField] private GameObject itemScreenPanel;
@@ -61,7 +64,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text itemCulturalText;
     [SerializeField] private TMP_Text itemDetailText;
     [SerializeField] private TMP_Text itemEffectText;
-    [SerializeField] private Button itemPortalButton;
 
     [Header("Portal Notification")]
     [SerializeField] private GameObject portalNotificationPanel;
@@ -83,6 +85,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private Image[] itemSlotImages;
     [SerializeField] private TMP_Text[] itemSlotCountTexts;
+    [SerializeField] private Image emberlightSlotImage;
     [SerializeField] private TMP_Text emberlightSlotCountText;
 
     [Header("Game Panels")]
@@ -124,13 +127,6 @@ public class UIManager : MonoBehaviour
         messagePanel.SetActive(false);
         compassPanel.SetActive(false);
 
-        // Set up button listeners
-        if (discoveryPortalButton != null)
-            discoveryPortalButton.onClick.AddListener(OnPortalButtonPressed);
-
-        if (discoveryContinueButton != null)
-            discoveryContinueButton.onClick.AddListener(OnContinueButtonPressed);
-
         if (tooltipUseButton != null)
             tooltipUseButton.onClick.AddListener(OnTooltipUsePressed);
 
@@ -143,23 +139,51 @@ public class UIManager : MonoBehaviour
 
         _portalInputAction.performed += PortalInputAction_performed;
         _backInputAction.performed += BackInputAction_performed;
+
+        // Discover screen
+        _discoverPortalInputAction.performed -= DiscoverPortalInputAction_performed;
+        _mainmenuInputAction.performed -= MainmenuInputAction_performed;
+
+        _discoverPortalInputAction.performed += DiscoverPortalInputAction_performed;
+        _mainmenuInputAction.performed += MainmenuInputAction_performed;
     }
 
     private void OnDisable()
     {
         _portalInputAction.performed -= PortalInputAction_performed;
         _backInputAction.performed -= BackInputAction_performed;
+
+        _discoverPortalInputAction.performed -= DiscoverPortalInputAction_performed;
+        _mainmenuInputAction.performed -= MainmenuInputAction_performed;
     }
 
     private void BackInputAction_performed(InputAction.CallbackContext obj)
     {
         // Close Item Popup
-        OnItemContinueButtonPressed();
+        CloseItemScreen();
     }
 
     private void PortalInputAction_performed(InputAction.CallbackContext obj)
     {
+        MuseumAPIClient.Instance.SaveArtifact();
         ShowMessage("Opening Portal Site");
+    }
+
+    private void MainmenuInputAction_performed(InputAction.CallbackContext obj)
+    {
+        _discoverPortalInputAction.Disable();
+        _mainmenuInputAction.Disable();
+
+        _discoverPortalInputAction.performed -= DiscoverPortalInputAction_performed;
+        _mainmenuInputAction.performed -= MainmenuInputAction_performed;
+
+        _sceneLoader.ChangeScene(ESceneID.MainMenu);
+    }
+
+    private void DiscoverPortalInputAction_performed(InputAction.CallbackContext obj)
+    {
+        MuseumAPIClient.Instance.SaveArtifact();
+        ShowMessage("Artifact Saved to Digital Museum!");
     }
 
     void Update()
@@ -313,7 +337,12 @@ public class UIManager : MonoBehaviour
 
     public void ShowDiscoveryScreen(string artifactName, Sprite artifactImage, string loreText, string historicalFact)
     {
+        MuseumAPIClient.Instance.SaveArtifact();
+
         discoveryScreenPanel.SetActive(true);
+
+        _discoverPortalInputAction.Enable();
+        _mainmenuInputAction.Enable();
 
         if (discoveryArtifactName != null)
             discoveryArtifactName.text = artifactName;
@@ -332,31 +361,6 @@ public class UIManager : MonoBehaviour
 
         // Pause game
         Time.timeScale = 0f;
-    }
-
-    void OnPortalButtonPressed()
-    {
-        // Call Museum API
-        MuseumAPIClient.Instance.SaveArtifact();
-
-        // Show portal notification
-        ShowPortalNotification("✅ Artifact Saved to Digital Museum!");
-
-        // Disable button after click
-        discoveryPortalButton.interactable = false;
-        discoveryPortalButton.GetComponentInChildren<Text>().text = "✓ Saved";
-    }
-
-    void OnContinueButtonPressed()
-    {
-        discoveryScreenPanel.SetActive(false);
-
-        // Resume game
-        Time.timeScale = 1f;
-        Cursor.visible = false;
-
-        // Show completion message
-        ShowMessage("You have recovered the Baybayin Stone!");
     }
 
     public void ShowItemScreen(InventoryItem item)
@@ -380,7 +384,7 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    void OnItemContinueButtonPressed()
+    public void CloseItemScreen()
     {
         _portalInputAction.Disable();
         _backInputAction.Disable();
@@ -463,7 +467,12 @@ public class UIManager : MonoBehaviour
                 itemSlotImages[i].gameObject.SetActive(true);
                 itemSlotImages[i].sprite = items[i].icon;
 
-                itemSlotImages[i].color = items[i].isActive ? Color.white : Color.darkKhaki;
+                Color itemColor = itemSlotImages[i].color;
+
+                itemColor = items[i].isActive ? Color.white : Color.darkKhaki;
+                itemColor.a = items[i].isActive ? 1 : 0.35f;
+
+                itemSlotImages[i].color = itemColor;
 
                 //if (items[i].isStackable && items[i].currentStack > 1)
                 //{
@@ -484,15 +493,24 @@ public class UIManager : MonoBehaviour
         }
 
         // Update emberlight slot
+        Color _c = emberlightSlotImage.color;
         if (emberlightAmount > 0)
         {
+            _c = Color.white;
+            _c.a = 1;
+        
             emberlightSlotCountText.text = emberlightAmount.ToString("D2");
             emberlightSlotCountText.gameObject.SetActive(true);
         }
         else
         {
+            _c = Color.darkKhaki;
+            _c.a = 0.25f;
+
             emberlightSlotCountText.gameObject.SetActive(false);
         }
+        
+        emberlightSlotImage.color = _c;
     }
 
     public void ToggleInventory()

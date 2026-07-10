@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using MoreMountains.Feedbacks;
 
 public class LanternManager : MonoBehaviour
 {
@@ -26,11 +27,14 @@ public class LanternManager : MonoBehaviour
     [SerializeField] private float maxRange = 15f;
 
     [Header("Item Effects")]
+    [SerializeField] private EchoComponent _playerEchoComponent;
+    [SerializeField] private GameObject bambooTorchPrefab;
+    [SerializeField] private MMFeedbacks _spawnFeedbacks;
+    [SerializeField] private LayerMask groundLayerMask = ~0;
     private float temporaryDecayReduction = 1f;
     private float temporaryRangeBoost = 1f;
     private float effectTimer = 0f;
     private bool isEffectActive = false;
-    private EchoComponent _playerEchoComponent;
 
     [Header("Audio")]
     [SerializeField] private AudioSource lanternAudio;
@@ -302,6 +306,39 @@ public class LanternManager : MonoBehaviour
         temporaryRangeBoost = 1f;
         isEffectActive = false;
         effectTimer = 0f;
+    }
+
+    public void SpawnBambooTorch()
+    {
+        _spawnFeedbacks.PlayFeedbacks();
+
+        GameObject g = Instantiate(bambooTorchPrefab);
+
+        Vector3 spawnPosition = GetGroundPosition(_playerEchoComponent.transform.position);
+
+        g.transform.SetPositionAndRotation(
+            spawnPosition, _playerEchoComponent.transform.rotation);
+    }
+
+    private Vector3 GetGroundPosition(Vector3 position)
+    {
+        // Cast ray downward from the position
+        RaycastHit hit;
+        Vector3 rayOrigin = new Vector3(position.x, position.y + 5f, position.z);
+        
+        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, 10f, groundLayerMask))
+        {
+            Debug.Log($"Raycast hit ground at: {hit.point}, distance: {hit.distance}");
+
+            return hit.point;
+        }
+        else
+        {
+            Debug.LogWarning($"Raycast failed to find ground at {position}. Using original position.");
+
+            // Fallback to original position with slight Y offset
+            return new Vector3(position.x, position.y + 0.5f, position.z);
+        }
     }
 
     #endregion

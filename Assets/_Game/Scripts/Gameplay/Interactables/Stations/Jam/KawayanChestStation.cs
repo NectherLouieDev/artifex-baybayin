@@ -55,8 +55,9 @@ public class KawayanChestStation : InteractableObject
                 if (!actorCarrierComponent.CarriedItem.GetItemConfig().isKawayan)
                 {
                     actorCarrierComponent.DropItem();
-                    Debug.Log("Item cannot open Chest!");
-                    UIManager.Instance.ShowQuickMessage("Item cannot open Chest!");
+                    string msg = "You need a Kawayan Key!";
+                    Debug.Log(msg);
+                    UIManager.Instance.ShowQuickMessage(msg);
                     return;
                 }
 
@@ -80,6 +81,8 @@ public class KawayanChestStation : InteractableObject
 
                 if (stationItem != null)
                     actorCarrierComponent.PickupItem(stationItem);
+
+                UIManager.Instance.ShowQuickMessage("You need a Key!");
             }
         }
     }

@@ -101,7 +101,8 @@ public class ArtifactSpawner : MonoBehaviour
             availablePrefabs.RemoveAt(prefabIndex);
 
             // Instantiate chest
-            GameObject chest = Instantiate(selectedPrefab, spawnPosition, Quaternion.identity);
+            GameObject chest = Instantiate(
+                selectedPrefab, spawnPosition, selectedPoint.localRotation);
 
             // Optional: Random rotation
             chest.transform.Rotate(Vector3.up, Random.Range(0f, 360f));

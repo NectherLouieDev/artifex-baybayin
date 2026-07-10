@@ -108,7 +108,6 @@ public class InventoryManager : MonoBehaviour
         if (LanternManager.Instance.FuelPercentage >= 0.9f)
             return;
 
-        LanternManager.Instance.Refuel(5);
         UseEmberlight();
     }
 
@@ -184,6 +183,7 @@ public class InventoryManager : MonoBehaviour
         if (emberlightAmount <= 0)
             return;
 
+        LanternManager.Instance.Refuel(5);
         emberlightAmount -= 1;
         UpdateUI();
     }
@@ -343,6 +343,7 @@ public class InventoryManager : MonoBehaviour
             case ItemEffectType.KawayanTorch:
                 // Kawayan Bamboo Torch - Craftable, serves as backup light
                 // This would create a torch item in world or temporary light
+                LanternManager.Instance.SpawnBambooTorch();
                 UIManager.Instance.ShowMessage("Kawayan Torch crafted!");
                 // Could spawn a torch object or provide temporary light
                 break;

@@ -55,8 +55,9 @@ public class KulintangChestStation : InteractableObject
                 if (!actorCarrierComponent.CarriedItem.GetItemConfig().isKulintang)
                 {
                     actorCarrierComponent.DropItem();
-                    Debug.Log("Item cannot open Chest!");
-                    UIManager.Instance.ShowQuickMessage("Item cannot open Chest!");
+                    string msg = "You need a Kulintang Key!";
+                    Debug.Log(msg);
+                    UIManager.Instance.ShowQuickMessage(msg);
                     return;
                 }
 
@@ -80,6 +81,8 @@ public class KulintangChestStation : InteractableObject
 
                 if (stationItem != null)
                     actorCarrierComponent.PickupItem(stationItem);
+
+                UIManager.Instance.ShowQuickMessage("You need a Key!");
             }
         }
     }

@@ -55,8 +55,9 @@ public class AnnattoChestStation : InteractableObject
                 if (!actorCarrierComponent.CarriedItem.GetItemConfig().isAnnatto)
                 {
                     actorCarrierComponent.DropItem();
-                    Debug.Log("Item cannot open Chest!");
-                    UIManager.Instance.ShowQuickMessage("Item cannot open Chest!");
+                    string msg = "You need an Annatto Key!";
+                    Debug.Log(msg);
+                    UIManager.Instance.ShowQuickMessage(msg);
                     return;
                 }
 
@@ -80,6 +81,8 @@ public class AnnattoChestStation : InteractableObject
 
                 if (stationItem != null)
                     actorCarrierComponent.PickupItem(stationItem);
+
+                UIManager.Instance.ShowQuickMessage("You need a Key!");
             }
         }
     }
