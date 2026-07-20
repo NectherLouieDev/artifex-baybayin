@@ -45,6 +45,7 @@ public class LanternManager : MonoBehaviour
     [Header("States")]
     private bool isLanternOn = true;
     private bool isInSafeZone = false;
+    private bool isShadowNear = false;
     private bool isLowFuelWarningActive = false;
     private float flickerTimer = 0f;
     private float flickerInterval = 0.1f;
@@ -54,6 +55,11 @@ public class LanternManager : MonoBehaviour
     public float MaxFuel => maxFuel;
     public float FuelPercentage => currentFuel / maxFuel;
     public bool IsInSafeZone => isInSafeZone;
+    public bool IsShadowNear 
+    { 
+        get { return isShadowNear; } 
+        set { isShadowNear = value; }
+    }
 
     // Singleton
     public static LanternManager Instance;
@@ -100,7 +106,8 @@ public class LanternManager : MonoBehaviour
 
     void DecayFuel()
     {
-        if (!isLanternOn || isInSafeZone) return;
+        if (!isLanternOn || isInSafeZone || !isShadowNear) 
+            return;
 
         float effectiveDecay = decayRate * decayMultiplier * temporaryDecayReduction;
         currentFuel -= effectiveDecay;
@@ -109,7 +116,7 @@ public class LanternManager : MonoBehaviour
         if (currentFuel <= 0)
         {
             TurnOffLantern();
-            GameManager.Instance.RespawnPlayer();
+            //GameManager.Instance.RespawnPlayer();
         }
 
         // Update audio pitch based on fuel level
