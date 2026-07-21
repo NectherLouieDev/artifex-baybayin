@@ -41,6 +41,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Gradient fuelGradient;
     [SerializeField] private TMP_Text fuelText;
     [SerializeField] private GameObject lowFuelWarning;
+    [SerializeField] private CanvasGroup fuelDamagePanel;
 
     [Header("Quest Display")]
     [SerializeField] private GameObject questDisplay;
@@ -290,6 +291,12 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Fuel Display
+
+    public void PlayDamageFX()
+    {
+        fuelDamagePanel.DOFade(1f, 0.15f)
+            .OnComplete(() => fuelDamagePanel.DOFade(0, 0.1f));
+    }
 
     public void ShowFuelDisplay()
     {

@@ -16025,6 +16025,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MemoryStone
   echoComponent: {fileID: 8568631177774141865}
   _safeAreaTrigger: {fileID: 4796822253660587089}
+  _sphereCollider: {fileID: 2841190779251422241}
+  _safeZoneRadius: 3.5
   activationCost: 5
   _respawnTranfsorm: {fileID: 1898384683212806445}
   lightGlows:

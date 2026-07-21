@@ -50,6 +50,9 @@ public class LanternManager : MonoBehaviour
     private float flickerTimer = 0f;
     private float flickerInterval = 0.1f;
 
+    [Header("Feedbacks")]
+    [SerializeField] private MMFeedbacks fuelDamageFeedbacks;
+
     // Public properties
     public float CurrentFuel => currentFuel;
     public float MaxFuel => maxFuel;
@@ -113,10 +116,14 @@ public class LanternManager : MonoBehaviour
         currentFuel -= effectiveDecay;
         currentFuel = Mathf.Clamp(currentFuel, 0, maxFuel);
 
+        UIManager.Instance.PlayDamageFX();
+        fuelDamageFeedbacks?.PlayFeedbacks();
+
         if (currentFuel <= 0)
         {
             TurnOffLantern();
             //GameManager.Instance.RespawnPlayer();
+            GameManager.Instance.GameOver();
         }
 
         // Update audio pitch based on fuel level
@@ -287,6 +294,16 @@ public class LanternManager : MonoBehaviour
     #endregion
 
     #region Item Effects
+
+    public void ApplyDecayMultiplier(float multiplier)
+    {
+        temporaryDecayReduction = multiplier;
+    }
+
+    public void ResetDecayMultiplier()
+    {
+        temporaryDecayReduction = 1f;
+    }
 
     public void ApplyDecayReduction(float reductionMultiplier, float duration)
     {

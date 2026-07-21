@@ -462,6 +462,8 @@ public class GameManager : MonoBehaviour
     #region End Scene
     public void GameOver()
     {
+        currentPlayer.GetComponent<PlayerController>().InputEnabled = false;
+
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
