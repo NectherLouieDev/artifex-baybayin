@@ -147,6 +147,8 @@ public class KulintangChestStation : InteractableObject
 
         _particleObject.SetActive(false);
 
+        UIManager.Instance.ShowGameNotification("You found Kulintang!");
+
         SpawnOutput();
 
         _isOpening = false;

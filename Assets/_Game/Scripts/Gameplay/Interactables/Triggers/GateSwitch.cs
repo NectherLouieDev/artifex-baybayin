@@ -13,7 +13,7 @@ public class GateSwitch : InteractableObject
         _leverTransform.DOShakeRotation(0.2f); // Change this
 
         _doorTransform.DOLocalMoveY(-5f, 0.5f)
-            .SetEase(Ease.InOutBack)
+            //.SetEase(Ease.InOutBack)
             .SetDelay(0.1f);
     }
 }

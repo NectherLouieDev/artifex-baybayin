@@ -203,9 +203,12 @@ public class EchoComponent : MonoBehaviour
     void OnDisable()
     {
         // Clean up when disabled
-        if (spawnCooldownTimer.IsRunning())
+        if (spawnCooldownTimer != null)
         {
-            spawnCooldownTimer.StopTimer();
+            if (spawnCooldownTimer.IsRunning())
+            {
+                spawnCooldownTimer.StopTimer();
+            }
         }
 
         if (currentEcho != null)

@@ -1,8 +1,9 @@
+using MoreMountains.Feedbacks;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using TMPro;
-using MoreMountains.Feedbacks;
 
 public class LanternManager : MonoBehaviour
 {
@@ -113,6 +114,7 @@ public class LanternManager : MonoBehaviour
             return;
 
         float effectiveDecay = decayRate * decayMultiplier * temporaryDecayReduction;
+        Debug.Log("effectiveDecay -> " + effectiveDecay + " -------------------------- " + temporaryDecayReduction);
         currentFuel -= effectiveDecay;
         currentFuel = Mathf.Clamp(currentFuel, 0, maxFuel);
 
@@ -295,6 +297,56 @@ public class LanternManager : MonoBehaviour
 
     #region Item Effects
 
+    private float _currentDecayMultiplier = 1f;
+    private Dictionary<ShadowAgentStateHandler, float> _shadowMultipliers = new Dictionary<ShadowAgentStateHandler, float>();
+    
+    public void RegisterShadow(ShadowAgentStateHandler shadow)
+    {
+        if (_shadowMultipliers.ContainsKey(shadow))
+            return;
+
+        if (!_shadowMultipliers.ContainsKey(shadow))
+        {
+            _shadowMultipliers[shadow] = 1f;
+        }
+    }
+
+    public void UnregisterShadow(ShadowAgentStateHandler shadow)
+    {
+        if (_shadowMultipliers.ContainsKey(shadow))
+        {
+            _shadowMultipliers.Remove(shadow);
+            RecalculateDecayMultiplier();
+        }
+    }
+
+    public void UpdateShadowMultiplier(ShadowAgentStateHandler shadow, float multiplier)
+    {
+        if (_shadowMultipliers.ContainsKey(shadow))
+        {
+            _shadowMultipliers[shadow] = multiplier;
+            
+            Debug.Log("UpdateShadowMultiplier decayMultiplier -> " + multiplier + " -------------------------- " + multiplier);
+
+            RecalculateDecayMultiplier();
+        }
+    }
+
+    private void RecalculateDecayMultiplier()
+    {
+        // Use the highest multiplier (worst case)
+        float highestMultiplier = 1f;
+        foreach (var kvp in _shadowMultipliers)
+        {
+            if (kvp.Value > highestMultiplier)
+                highestMultiplier = kvp.Value;
+        }
+
+        //_currentDecayMultiplier = highestMultiplier;
+
+        temporaryDecayReduction = highestMultiplier;
+    }
+
     public void ApplyDecayMultiplier(float multiplier)
     {
         temporaryDecayReduction = multiplier;
@@ -303,6 +355,8 @@ public class LanternManager : MonoBehaviour
     public void ResetDecayMultiplier()
     {
         temporaryDecayReduction = 1f;
+
+        Debug.Log("temporaryDecayReduction -> -------------------------- " + temporaryDecayReduction);
     }
 
     public void ApplyDecayReduction(float reductionMultiplier, float duration)

@@ -147,6 +147,8 @@ public class TnalakChestStation : InteractableObject
 
         _particleObject.SetActive(false);
 
+        UIManager.Instance.ShowGameNotification("You found T'nalak Cloth!");
+
         SpawnOutput();
 
         _isOpening = false;

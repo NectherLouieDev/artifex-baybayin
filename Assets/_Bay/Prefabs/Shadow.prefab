@@ -7046,7 +7046,7 @@ MonoBehaviour:
   approachSpeed: 12
   retreatSpeed: 8
   fleeSpeed: 5
-  stoppingDistance: 1
+  stoppingDistance: 0.5
   updatePathInterval: 0.5
   investigationRadius: 64
   approachRadius: 16
@@ -7062,6 +7062,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   lineOfSightCheckInterval: 1
+  maxDecayProx: 8
 --- !u!82 &592584332663027032
 AudioSource:
   m_ObjectHideFlags: 0

@@ -147,6 +147,8 @@ public class KawayanChestStation : InteractableObject
 
         _particleObject.SetActive(false);
 
+        UIManager.Instance.ShowGameNotification("You found Kawayan!");
+
         SpawnOutput();
 
         _isOpening = false;

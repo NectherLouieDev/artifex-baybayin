@@ -22,7 +22,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text messageText;
     [SerializeField] private GameObject messagePanel;
     [SerializeField] private float messageDisplayTime = 3f;
+    [SerializeField] private GameObject gameNotifyPanel;
+    [SerializeField] private TMP_Text gameNotifyText;
     private Coroutine messageCoroutine;
+    private Coroutine gameNotificationCoroutine;
 
     [Header("Audio Compass")]
     [SerializeField] private RectTransform compassArrow;
@@ -129,6 +132,7 @@ public class UIManager : MonoBehaviour
         inventoryPanel.SetActive(false);
         interactPanel.SetActive(false);
         messagePanel.SetActive(false);
+        gameNotifyPanel.SetActive(false);
         compassPanel.SetActive(false);
 
         if (tooltipUseButton != null)
@@ -217,6 +221,24 @@ public class UIManager : MonoBehaviour
     }
 
     #region Messages
+
+    public void ShowGameNotification(string message)
+    {
+        if (gameNotificationCoroutine != null)
+            StopCoroutine(gameNotificationCoroutine);
+
+        gameNotificationCoroutine = StartCoroutine(DisplayGameNotification(message));
+    }
+
+    IEnumerator DisplayGameNotification(string message)
+    {
+        gameNotifyPanel.SetActive(true);
+        gameNotifyText.text = "<incr>" + message;
+
+        yield return new WaitForSeconds(messageDisplayTime);
+
+        gameNotifyPanel.SetActive(false);
+    }
 
     public void ShowMessage(string message)
     {

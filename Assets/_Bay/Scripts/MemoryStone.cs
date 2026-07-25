@@ -60,6 +60,6 @@ public class MemoryStone : MonoBehaviour
 
         GameManager.Instance.ActivateMemoryStone(_respawnTranfsorm.position, gameObject.name);
         //FogManager.Instance.PushBackFog(transform.position, 20f);
-        UIManager.Instance.ShowMessage("Memory Stone Activated!");
+        UIManager.Instance.ShowGameNotification("Memory Stone Activated!");
     }
 }

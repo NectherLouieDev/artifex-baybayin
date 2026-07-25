@@ -147,6 +147,8 @@ public class AnnattoChestStation : InteractableObject
 
         _particleObject.SetActive(false);
 
+        UIManager.Instance.ShowGameNotification("You found Annatto Seed!");
+
         SpawnOutput();
 
         _isOpening = false;

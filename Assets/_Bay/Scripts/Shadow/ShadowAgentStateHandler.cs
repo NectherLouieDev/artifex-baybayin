@@ -44,6 +44,9 @@ public class ShadowAgentStateHandler : MonoBehaviour
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private float lineOfSightCheckInterval = 1f;
 
+    [Header("Damage")]
+    [SerializeField] private float maxDecayProx = 16f;
+
     // State Machine
     private EShadowAgentState _currentState = EShadowAgentState.Idle;
     private EShadowAgentState _previousState = EShadowAgentState.Idle;
@@ -77,6 +80,12 @@ public class ShadowAgentStateHandler : MonoBehaviour
         InitializeTimers();
         FindTarget();
         SetState(EShadowAgentState.Approaching);
+        
+        LanternManager.Instance?.RegisterShadow(this);
+    }
+    private void OnDestroy()
+    {
+        LanternManager.Instance?.UnregisterShadow(this);
     }
 
     private void Update()
@@ -246,21 +255,26 @@ public class ShadowAgentStateHandler : MonoBehaviour
         if (LanternManager.Instance == null)
             return;
 
+        LanternManager.Instance.RegisterShadow(this);
+
         // Only apply decay effect if shadow is within approach radius
         if (_distanceToPlayer <= approachRadius)
         {
             // Calculate decay multiplier based on proximity
             // proximity = 0 (far) -> multiplier = 1x (normal decay)
-            // proximity = 0.5 (medium) -> multiplier = 1.5x (50% faster)
-            // proximity = 1 (very close) -> multiplier = 3x (200% faster)
-            float decayMultiplier = 1f + (proximity * 8f); // Ranges from 1x to 8x
+            // proximity = 0.5 (medium) -> multiplier = 8x
+            // proximity = 1 (very close) -> multiplier = 16x
+            float decayMultiplier = 1f + (proximity * maxDecayProx); // Ranges from 1x to 16x
 
-            LanternManager.Instance?.ApplyDecayMultiplier(decayMultiplier);
+            Debug.Log("decayMultiplier -> " + decayMultiplier + " -------------------------- " + decayMultiplier);
+            //LanternManager.Instance?.ApplyDecayMultiplier(decayMultiplier);
+            LanternManager.Instance.UpdateShadowMultiplier(this, decayMultiplier);
         }
         else
         {
             // Reset to normal decay when shadow is far
-            LanternManager.Instance?.ResetDecayMultiplier();
+            //LanternManager.Instance?.ResetDecayMultiplier();
+            LanternManager.Instance.UpdateShadowMultiplier(this, 1f);
         }
     }
 
