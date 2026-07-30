@@ -152,7 +152,7 @@ public class ShadowAgentStateHandler : MonoBehaviour
         // Notify listeners
         OnStateChanged?.Invoke(newState);
 
-        Debug.Log($"{gameObject.name} State Changed: {_previousState} -> {_currentState}");
+        //Debug.Log($"{gameObject.name} State Changed: {_previousState} -> {_currentState}");
     }
 
     private void OnStateEnter(EShadowAgentState state)
@@ -174,11 +174,12 @@ public class ShadowAgentStateHandler : MonoBehaviour
 
             case EShadowAgentState.Retreating:
                 // Movement handled in PathUpdate
+                _stateTransitionTimer.StartTimer(5f, 1); // Retreat for 5 seconds
                 break;
 
             case EShadowAgentState.Fleeing:
                 // Movement handled in PathUpdate
-                _stateTransitionTimer.StartTimer(5f, 1); // Flee for 5 seconds then re-evaluate
+                _stateTransitionTimer.StartTimer(10f, 1); // Flee for 10 seconds then re-evaluate
                 break;
 
             case EShadowAgentState.Stunned:
@@ -190,10 +191,12 @@ public class ShadowAgentStateHandler : MonoBehaviour
 
     private void EvaluateStateTransition()
     {
-        if (_target == null) return;
+        if (_target == null) 
+            return;
 
         // Stunned state is locked until timer completes
-        if (_currentState == EShadowAgentState.Stunned) return;
+        if (_currentState == EShadowAgentState.Stunned) 
+            return;
 
         // Priority 1: Memory Stone zone - immediate flee
         if (_isInMemoryStoneZone)
@@ -266,7 +269,6 @@ public class ShadowAgentStateHandler : MonoBehaviour
             // proximity = 1 (very close) -> multiplier = 16x
             float decayMultiplier = 1f + (proximity * maxDecayProx); // Ranges from 1x to 16x
 
-            Debug.Log("decayMultiplier -> " + decayMultiplier + " -------------------------- " + decayMultiplier);
             //LanternManager.Instance?.ApplyDecayMultiplier(decayMultiplier);
             LanternManager.Instance.UpdateShadowMultiplier(this, decayMultiplier);
         }
@@ -282,9 +284,18 @@ public class ShadowAgentStateHandler : MonoBehaviour
 
     #region Detection Methods
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent(out PlayerIdentity identity))
+        {
+            //UIManager.Instance.ShowMessage("Hit the player!");
+        }
+    }
+
     private void UpdateDistanceToPlayer()
     {
-        if (_target == null) return;
+        if (_target == null) 
+            return;
         _distanceToPlayer = Vector3.Distance(transform.position, _target.transform.position);
     }
 
@@ -449,10 +460,10 @@ public class ShadowAgentStateHandler : MonoBehaviour
         {
             // Move directly away from the player
             Vector3 retreatDirection = (transform.position - _target.transform.position).normalized;
-            Vector3 retreatPoint = transform.position + retreatDirection * 10f;
+            Vector3 retreatPoint = transform.position + retreatDirection * 20f;
 
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(retreatPoint, out hit, 15f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(retreatPoint, out hit, 25f, NavMesh.AllAreas))
             {
                 _agent.SetDestination(hit.position);
             }

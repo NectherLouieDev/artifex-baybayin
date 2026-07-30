@@ -531,12 +531,12 @@ public class GameManager : MonoBehaviour
 
     #region Artifact System
 
-    public void DiscoverArtifact()
+    public void DiscoverArtifact(DiscoveryScreenData data)
     {
         artifactDiscovered = true;
 
         // Update UI
-        UpdateUI();
+        //UpdateUI();
 
         // Play victory music
         if (gameAudio != null && victoryMusic != null)
@@ -548,18 +548,15 @@ public class GameManager : MonoBehaviour
 
         OnArtifactDiscovered?.Invoke(true);
 
+        UIManager.Instance.ShowDiscoveryScreen(
+            data.artifactName,
+            data.artifactImage,
+            data.loreText,
+            data.historicalFact
+        );
+
         if (showDebugLogs)
             Debug.Log("Artifact discovered!");
-
-        // Show victory screen after delay
-        if (!victoryTimer.IsRunning())
-        {
-            victoryTimer.StartTimer(1f, 1);
-        }
-        else
-        {
-            victoryTimer.ResetTimer();
-        }
     }
 
     #endregion
@@ -695,7 +692,7 @@ public class GameManager : MonoBehaviour
     [ContextMenu("Debug - Discover Artifact")]
     void DebugDiscoverArtifact()
     {
-        DiscoverArtifact();
+        DiscoverArtifact(new DiscoveryScreenData());
     }
 
     [ContextMenu("Debug - Respawn Player")]

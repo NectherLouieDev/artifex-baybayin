@@ -7046,14 +7046,14 @@ MonoBehaviour:
   approachSpeed: 12
   retreatSpeed: 8
   fleeSpeed: 5
-  stoppingDistance: 0.5
+  stoppingDistance: 1
   updatePathInterval: 0.5
   investigationRadius: 64
   approachRadius: 16
-  retreatRadius: 5
-  fleeRadius: 3
-  minWanderDistance: 5
-  maxWanderDistance: 20
+  retreatRadius: 8
+  fleeRadius: 0
+  minWanderDistance: 16
+  maxWanderDistance: 32
   idleDurationMin: 3
   idleDurationMax: 8
   stunDuration: 2
@@ -7062,7 +7062,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   lineOfSightCheckInterval: 1
-  maxDecayProx: 8
+  maxDecayProx: 4
 --- !u!82 &592584332663027032
 AudioSource:
   m_ObjectHideFlags: 0

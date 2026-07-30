@@ -114,7 +114,7 @@ public class LanternManager : MonoBehaviour
             return;
 
         float effectiveDecay = decayRate * decayMultiplier * temporaryDecayReduction;
-        Debug.Log("effectiveDecay -> " + effectiveDecay + " -------------------------- " + temporaryDecayReduction);
+        
         currentFuel -= effectiveDecay;
         currentFuel = Mathf.Clamp(currentFuel, 0, maxFuel);
 
@@ -326,8 +326,6 @@ public class LanternManager : MonoBehaviour
         {
             _shadowMultipliers[shadow] = multiplier;
             
-            Debug.Log("UpdateShadowMultiplier decayMultiplier -> " + multiplier + " -------------------------- " + multiplier);
-
             RecalculateDecayMultiplier();
         }
     }
@@ -355,8 +353,6 @@ public class LanternManager : MonoBehaviour
     public void ResetDecayMultiplier()
     {
         temporaryDecayReduction = 1f;
-
-        Debug.Log("temporaryDecayReduction -> -------------------------- " + temporaryDecayReduction);
     }
 
     public void ApplyDecayReduction(float reductionMultiplier, float duration)

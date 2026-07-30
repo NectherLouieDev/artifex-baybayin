@@ -16,6 +16,8 @@ public class MainMenuHandler : MonoBehaviour
 
     private void Start()
     {
+        PlatformIntegration.Instance.OnAuthorized -= Instance_OnAuthorized;
+
         _delayTimer = gameObject.AddComponent<GGTimer>();
         _delayTimer.OnTimerCompleted += DelayTimer_OnTimerCompleted;
 
@@ -70,6 +72,13 @@ public class MainMenuHandler : MonoBehaviour
 
         _startFeedback?.PlayFeedbacks();
 
+        PlatformIntegration.Instance.OnAuthorized -= Instance_OnAuthorized;
+        PlatformIntegration.Instance.OnAuthorized += Instance_OnAuthorized;
+        PlatformIntegration.Instance.StartSession();
+    }
+
+    private void Instance_OnAuthorized()
+    {
         _delayTimer.StartTimer(0.1f, 1);
     }
 }

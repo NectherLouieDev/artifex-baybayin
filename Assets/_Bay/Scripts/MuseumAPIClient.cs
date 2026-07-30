@@ -74,7 +74,49 @@ public class MuseumAPIClient : MonoBehaviour
         {
             playerId = System.Guid.NewGuid().ToString();
         }
+
+        // Subscribe to GameOn events if PlatformIntegration exists
+        var platform = PlatformIntegration.Instance;
+        if (platform != null)
+        {
+            platform.OnAuthorized += OnGameOnAuthorized;
+            platform.OnArtifactUnlocked += OnGameOnArtifactUnlocked;
+        }
     }
+
+    void OnDestroy()
+    {
+        // Unsubscribe from events to prevent memory leaks
+        var platform = PlatformIntegration.Instance;
+        if (platform != null)
+        {
+            platform.OnAuthorized -= OnGameOnAuthorized;
+            platform.OnArtifactUnlocked -= OnGameOnArtifactUnlocked;
+        }
+    }
+
+    #region GameOn Integration
+
+    private void OnGameOnAuthorized()
+    {
+        Debug.Log("MuseumAPIClient: Player authorized via GameOn");
+        // Update player ID from GameOn if available
+        var platform = PlatformIntegration.Instance;
+        if (platform != null && !string.IsNullOrEmpty(platform.sessionToken))
+        {
+            // Use session token as player identifier or get from platform
+            playerId = platform.sessionToken.GetHashCode().ToString();
+        }
+    }
+
+    private void OnGameOnArtifactUnlocked()
+    {
+        Debug.Log("MuseumAPIClient: Artifact unlocked via GameOn!");
+        // Auto-save artifact when GameOn unlocks it
+        SaveArtifact();
+    }
+
+    #endregion
 
     #region Historical Facts Database
 
@@ -363,6 +405,13 @@ public class MuseumAPIClient : MonoBehaviour
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("X-API-Key", apiKey);
+
+            // Add GameOn session token if available for authentication
+            var platform = PlatformIntegration.Instance;
+            if (platform != null && !string.IsNullOrEmpty(platform.sessionToken))
+            {
+                request.SetRequestHeader("Authorization", "Bearer " + platform.sessionToken);
+            }
 
             if (logAPIResponses)
                 Debug.Log($"Sending to API: {apiEndpoint}");

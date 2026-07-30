@@ -1,0 +1,31 @@
+fileFormatVersion: 2
+guid: 7e6ba3a6b91d94c3499d600732466f2a
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 8
+  defaultSettings:
+    serializedVersion: 2
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+    preloadAudioData: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 332612
+  packageName: Forest of Whispers - Fantasy Music Pack Vol. 1
+  packageVersion: 1.0
+  assetPath: Assets/Forest of Whispers - Fantasy Music Pack Vol. 1/MP3/Forest of
+    Whispers 80 BPM .mp3
+  uploadId: 798308

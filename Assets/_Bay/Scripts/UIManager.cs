@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     [Header("Item Input")]
     [SerializeField] private InputAction _portalInputAction;
     [SerializeField] private InputAction _backInputAction;
+    [SerializeField] private InputAction _controlsInputAction;
 
     [Header("Hidden Discovery Input")]
     [SerializeField] private SceneLoader _sceneLoader;
@@ -24,6 +25,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float messageDisplayTime = 3f;
     [SerializeField] private GameObject gameNotifyPanel;
     [SerializeField] private TMP_Text gameNotifyText;
+    [SerializeField] private LazyRectMover controlsRectMover;
+    private bool controlsRectToggle = false;
     private Coroutine messageCoroutine;
     private Coroutine gameNotificationCoroutine;
 
@@ -148,6 +151,12 @@ public class UIManager : MonoBehaviour
         _portalInputAction.performed += PortalInputAction_performed;
         _backInputAction.performed += BackInputAction_performed;
 
+        // Controls
+        controlsRectToggle = false;
+        _controlsInputAction.performed -= ControlsInputAction_performed;
+        _controlsInputAction.performed += ControlsInputAction_performed;
+        _controlsInputAction.Enable();
+
         // Discover screen
         _discoverPortalInputAction.performed -= DiscoverPortalInputAction_performed;
         _mainmenuInputAction.performed -= MainmenuInputAction_performed;
@@ -160,6 +169,7 @@ public class UIManager : MonoBehaviour
     {
         _portalInputAction.performed -= PortalInputAction_performed;
         _backInputAction.performed -= BackInputAction_performed;
+        _controlsInputAction.performed -= ControlsInputAction_performed;
 
         _discoverPortalInputAction.performed -= DiscoverPortalInputAction_performed;
         _mainmenuInputAction.performed -= MainmenuInputAction_performed;
@@ -175,6 +185,21 @@ public class UIManager : MonoBehaviour
     {
         MuseumAPIClient.Instance.SaveArtifact();
         ShowMessage("Opening Portal Site");
+    }
+
+    private void ControlsInputAction_performed(InputAction.CallbackContext obj)
+    {
+        controlsRectToggle = !controlsRectToggle;
+
+        if (controlsRectToggle)
+        {
+            controlsRectMover.ResetToA();
+            controlsRectMover.MoveToB();
+        }
+        else
+        {
+            controlsRectMover.MoveToA();
+        }
     }
 
     private void MainmenuInputAction_performed(InputAction.CallbackContext obj)
@@ -373,23 +398,23 @@ public class UIManager : MonoBehaviour
 
     public void ShowDiscoveryScreen(string artifactName, Sprite artifactImage, string loreText, string historicalFact)
     {
-        MuseumAPIClient.Instance.SaveArtifact();
+        //MuseumAPIClient.Instance.SaveArtifact();
+        PlatformIntegration.Instance.OnArtifactUnlocked += () =>
+        {
+            Instance_OnArtifactUnlocked(artifactName, artifactImage, loreText, historicalFact);
+        };
 
-        discoveryScreenCanvas.alpha = 0;
-        discoveryScreenCanvas.DOFade(1, 0.25f)
-            .OnStart(() => {
-                discoveryScreenPanel.SetActive(true);
-            })
-            .OnComplete(() => {
-                discoveryScreenCanvas.alpha = 1;
-                discoveryScreenPanel.SetActive(true);
+        PlatformIntegration.Instance.UnlockArtifact();
+    }
+    
+    private void Instance_OnArtifactUnlocked(string artifactName, Sprite artifactImage, string loreText, string historicalFact)
+    {
+        PlatformIntegration.Instance.OnArtifactUnlocked -= () =>
+        {
+            Instance_OnArtifactUnlocked(artifactName, artifactImage, loreText, historicalFact);
+        };
 
-                Cursor.visible = true;
-                Time.timeScale = 0f;
-            });
-
-        _discoverPortalInputAction.Enable();
-        _mainmenuInputAction.Enable();
+        ShowGameNotification("Artifact Unlocked!");
 
         GameManager.Instance.DisablePauseInputAction();
 
@@ -404,6 +429,22 @@ public class UIManager : MonoBehaviour
 
         if (discoveryHistoricalFact != null)
             discoveryHistoricalFact.text = historicalFact;
+
+        discoveryScreenCanvas.alpha = 0;
+        discoveryScreenCanvas.DOFade(1, 0.25f)
+            .OnStart(() => {
+                discoveryScreenPanel.SetActive(true);
+            })
+            .OnComplete(() => {
+                discoveryScreenCanvas.alpha = 1;
+                discoveryScreenPanel.SetActive(true);
+                
+                _discoverPortalInputAction.Enable();
+                _mainmenuInputAction.Enable();
+
+                Cursor.visible = true;
+                Time.timeScale = 0f;
+            });
     }
 
     public void ShowItemScreen(InventoryItem item)

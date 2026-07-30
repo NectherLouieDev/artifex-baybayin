@@ -93,12 +93,7 @@ public class BaybayinStone : MonoBehaviour
 
             data.artifactImage = _artifactImage;
 
-            UIManager.Instance.ShowDiscoveryScreen(
-                data.artifactName,
-                data.artifactImage,
-                data.loreText,
-                data.historicalFact
-            );
+            GameManager.Instance.DiscoverArtifact(data);
         }
     }
 }
