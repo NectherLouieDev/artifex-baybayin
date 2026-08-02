@@ -32,11 +32,13 @@ public class PlatformIntegration : MonoBehaviour
     [SerializeField] private string apiBaseUrl = "https://gameonportal.ph";
     [SerializeField] private float pollInterval = 3f;
     [SerializeField] private float maxPollTime = 120f;
+    [SerializeField] private string artifactGalleryURL = "https://gameonportal.ph/artifact-gallery"; // set in inspector
 
     // Public properties
     public string sessionToken { get; private set; } = "";
     public bool isAuthorized { get; private set; } = false;
     public bool isPolling { get; private set; } = false;
+    public string ArtifactGalleryURL => artifactGalleryURL;
 
     // Events for other systems to subscribe to
     public event Action OnAuthorized;

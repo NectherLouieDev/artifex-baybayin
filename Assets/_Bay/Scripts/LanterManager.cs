@@ -41,7 +41,7 @@ public class LanternManager : MonoBehaviour
     [SerializeField] private AudioSource lanternAudio;
     [SerializeField] private AudioClip lowFuelSound;
     [SerializeField] private AudioClip refuelSound;
-    [SerializeField] private AudioClip lanternFlickerSound;
+    [SerializeField] private MMFeedbacks refuelFeedbacks;
 
     [Header("States")]
     private bool isLanternOn = true;
@@ -167,6 +167,8 @@ public class LanternManager : MonoBehaviour
         {
             lanternParticles.Play();
         }
+
+        refuelFeedbacks?.PlayFeedbacks();
     }
 
     public void RespawnFuel()

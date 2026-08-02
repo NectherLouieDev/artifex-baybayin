@@ -148,7 +148,7 @@ public class UIManager : MonoBehaviour
         _portalInputAction.performed -= PortalInputAction_performed;
         _backInputAction.performed -= BackInputAction_performed;
 
-        _portalInputAction.performed += PortalInputAction_performed;
+        //_portalInputAction.performed += PortalInputAction_performed;
         _backInputAction.performed += BackInputAction_performed;
 
         // Controls
@@ -183,7 +183,6 @@ public class UIManager : MonoBehaviour
 
     private void PortalInputAction_performed(InputAction.CallbackContext obj)
     {
-        MuseumAPIClient.Instance.SaveArtifact();
         ShowMessage("Opening Portal Site");
     }
 
@@ -219,8 +218,9 @@ public class UIManager : MonoBehaviour
 
     private void DiscoverPortalInputAction_performed(InputAction.CallbackContext obj)
     {
-        MuseumAPIClient.Instance.SaveArtifact();
-        ShowMessage("Artifact Saved to Digital Museum!");
+        ShowMessage("Opening Artifact Gallery!");
+
+        Application.OpenURL(PlatformIntegration.Instance.ArtifactGalleryURL);
     }
 
     void Update()
@@ -398,7 +398,6 @@ public class UIManager : MonoBehaviour
 
     public void ShowDiscoveryScreen(string artifactName, Sprite artifactImage, string loreText, string historicalFact)
     {
-        //MuseumAPIClient.Instance.SaveArtifact();
         PlatformIntegration.Instance.OnArtifactUnlocked += () =>
         {
             Instance_OnArtifactUnlocked(artifactName, artifactImage, loreText, historicalFact);
@@ -462,7 +461,7 @@ public class UIManager : MonoBehaviour
                 Time.timeScale = 0f;
             });
 
-        _portalInputAction.Enable();
+        //_portalInputAction.Enable();
         _backInputAction.Enable();
 
         GameManager.Instance.DisablePauseInputAction();

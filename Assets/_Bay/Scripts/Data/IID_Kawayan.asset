@@ -19,8 +19,8 @@ MonoBehaviour:
   description: A sturdy bamboo tube, carved with traditional geometric patterns.
     Kawayan (bamboo) is the main material used for structures and crafts across the
     region.
-  effectDescription: A torch that provides light even when your lantern is almost
-    depleted. Lights up exploration in the dark
+  effectDescription: Creates a torch that provides light even when your lantern is
+    almost depleted. Deters the Shadows away.
   icon: {fileID: 21300000, guid: 6a0a26a8290b5674b8be3e965c4ff77b, type: 3}
   effectType: 4
   isStackable: 0
